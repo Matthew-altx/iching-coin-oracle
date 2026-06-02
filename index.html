@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="zh-Hant-HK">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="六爻銅錢占筮：用三枚銅錢擲六次起卦，整理本卦、變卦、動爻，生成可貼去外部 AI 的易經解卦 prompt。"
+    />
+    <title>六爻銅錢占筮 · I Ching Coin Oracle</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" hreflang="zh-Hant-HK" href="./" />
+    <link rel="alternate" hreflang="en" href="./en.html" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css?v=20260603-oss-en1" />
+  </head>
+  <body>
+    <div class="cosmos" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="#prepare" aria-label="回到占卜準備頁">
+        <span class="brand-mark">易</span>
+        <span>
+          <strong>六爻銅錢占筮</strong>
+          <small>I Ching Coin Oracle</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="主要導覽">
+        <a href="#prepare">起卦</a>
+        <a href="#pro">Pro</a>
+        <a href="#pricing">方案</a>
+        <a href="#hexagram-library">卦庫</a>
+        <a href="#history">紀錄</a>
+        <a href="#commission">委託</a>
+        <a href="#about">關於</a>
+      </nav>
+      <div class="language" aria-label="語言">
+        <a aria-current="page" href="./">繁中</a>
+        <span>|</span>
+        <a href="./en.html">EN</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="oracle-prep" id="prepare" aria-labelledby="prepTitle">
+        <div class="prep-inner">
+          <div class="prep-symbol" aria-hidden="true">
+            <div class="prep-bagua">
+              <span>乾</span>
+              <span>兌</span>
+              <span>離</span>
+              <span>震</span>
+              <span>巽</span>
+              <span>坎</span>
+              <span>艮</span>
+              <span>坤</span>
+            </div>
+            <div class="prep-coin-large"><span>易</span></div>
+          </div>
+          <p class="prep-kicker">Six Coins Cast · One Clear Question</p>
+          <h1 class="prep-title" id="prepTitle">
+            <span>靜心</span>
+            <span>起卦</span>
+          </h1>
+          <div class="prep-coin-row" aria-hidden="true">
+            <span>字</span>
+            <span>背</span>
+            <span>字</span>
+          </div>
+          <p class="prep-copy">
+            先停一停，想清楚你真正想問的一件事。準備好後，再進入六次銅錢起卦，生成可貼去外部 AI 的易經解卦 prompt。
+          </p>
+          <a class="prep-start" id="startOracle" href="#oracle">開始占卜</a>
+        </div>
+      </section>
+
+      <section class="history-section usage-section" id="question-guide">
+        <div class="section-heading">
+          <p class="system-label">Before Casting</p>
+          <h2>先問準，再起卦</h2>
+        </div>
+        <div class="usage-grid">
+          <article>
+            <span>一件事</span>
+            <strong>不要一次問太多方向</strong>
+            <p>把問題收窄成一個主題，例如工作、感情、財務或一個具體選擇。</p>
+          </article>
+          <article>
+            <span>一段時間</span>
+            <strong>加上可判斷的時限</strong>
+            <p>例如「今個月」、「未來三個月」或「這次合作」，AI 解讀會更貼地。</p>
+          </article>
+          <article>
+            <span>一個行動</span>
+            <strong>問下一步，而不是問命定結果</strong>
+            <p>這個工具適合幫你看清局勢、風險和下一步，不是替你交出人生決定權。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="oracle-shell" id="oracle">
+        <div class="intro-panel">
+          <p class="system-label">Three Coins · Six Lines · One Prompt</p>
+          <h1><span>先起卦，</span><span>再問 AI</span></h1>
+          <p class="lead">
+            把問題寫清楚，逐爻擲出三枚銅錢。網站會由初爻向上整理本卦、變卦與動爻，再生成一段可貼去 ChatGPT、Claude 或 Gemini 的解卦 prompt。
+          </p>
+
+          <label class="field-label" for="question">你的問題</label>
+          <textarea
+            id="question"
+            maxlength="180"
+            placeholder="例如：我今個月應該先穩住現有收入，還是主動開拓新機會？"
+          ></textarea>
+          <div class="input-footer">
+            <span id="questionCount">0 / 180</span>
+            <button class="text-button" id="sampleQuestion" type="button">填入示例</button>
+          </div>
+          <div class="question-helper" aria-label="問題寫法提示">
+            <strong>問法參考</strong>
+            <ul>
+              <li>主角清楚：這件事和誰有關？</li>
+              <li>時間清楚：想看今個月、三個月，還是某次決定？</li>
+              <li>行動清楚：你想判斷前進、等待、轉向，還是止損？</li>
+            </ul>
+          </div>
+
+          <div class="coin-stage" aria-live="polite">
+            <div class="coin-tray" id="coinTray">
+              <button class="coin" type="button" aria-label="銅錢一" data-face="字">字</button>
+              <button class="coin" type="button" aria-label="銅錢二" data-face="背">背</button>
+              <button class="coin" type="button" aria-label="銅錢三" data-face="字">字</button>
+            </div>
+            <p id="castStatus">準備由初爻開始。每次會擲三枚銅錢，共六次。</p>
+            <p class="method-note">
+              已按「字背法」校驗：字=陰=2，背=陽=3；6 老陰、7 少陽、8 少陰、9 老陽。六次由初爻向上成卦，上三爻為外卦，下三爻為內卦。
+            </p>
+          </div>
+
+          <div class="controls">
+            <button class="primary-button" id="castButton" type="button">擲第 1 爻</button>
+            <button class="ghost-button" id="resetButton" type="button">重來</button>
+            <button class="ghost-button" id="copyButton" type="button" disabled>複製 AI Prompt</button>
+          </div>
+
+          <div class="gesture-panel" aria-live="polite">
+            <div class="gesture-copy">
+              <span class="system-label">Camera Gesture</span>
+              <strong>打響指擲爻</strong>
+              <p>
+                想保留儀式感，可以開啟相機與咪高峰。識別只在本機瀏覽器進行；看到手勢或聽到短促響指聲，就會替你擲下一爻。
+              </p>
+            </div>
+            <div class="camera-frame" id="cameraFrame">
+              <video id="gestureVideo" playsinline muted></video>
+              <canvas id="gestureCanvas" aria-hidden="true"></canvas>
+              <span id="gestureBadge">相機未啟動</span>
+            </div>
+            <div class="gesture-controls">
+              <button class="ghost-button" id="startGesture" type="button">開啟相機＋聲音識別</button>
+              <button class="ghost-button" id="stopGesture" type="button" disabled>停止</button>
+            </div>
+            <label class="sensitivity-control" for="snapSensitivity">
+              <span>聲音靈敏度</span>
+              <select id="snapSensitivity">
+                <option value="normal" selected>標準</option>
+                <option value="sensitive">靈敏</option>
+                <option value="strict">穩定</option>
+              </select>
+            </label>
+            <p class="gesture-status" id="gestureStatus">
+              實驗功能：請把手放在鏡頭中央，打響指前先讓拇指和中指短暫貼近；聲音偵測會聽短促而清脆的高頻峰值。
+            </p>
+            <div class="gesture-diagnostics" aria-label="響指偵測診斷">
+              <div class="signal-row">
+                <span>咪高峰峰值</span>
+                <div class="signal-track"><i id="audioMeter"></i></div>
+                <strong id="audioReadout">等待啟動</strong>
+              </div>
+              <div class="signal-row">
+                <span>高頻比例</span>
+                <div class="signal-track"><i id="frequencyMeter"></i></div>
+                <strong id="frequencyReadout">等待啟動</strong>
+              </div>
+              <div class="signal-row">
+                <span>手部模型</span>
+                <div class="signal-track"><i id="visionMeter"></i></div>
+                <strong id="visionReadout">未載入</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hexagram-panel" aria-label="六爻卦象">
+          <div class="panel-heading">
+            <span>卦象</span>
+            <strong id="progressLabel">0 / 6</strong>
+          </div>
+          <div class="line-stack" id="lineStack"></div>
+          <div class="legend">
+            <span><i class="legend-yang"></i>陽爻</span>
+            <span><i class="legend-yin"></i>陰爻</span>
+            <span><i class="legend-moving"></i>動爻</span>
+          </div>
+        </div>
+
+        <aside class="reading-panel">
+          <div class="result-card">
+            <span>本卦</span>
+            <strong id="primaryHex">未成卦</strong>
+            <small id="primaryMeta">擲滿六爻後顯示</small>
+          </div>
+          <div class="result-card">
+            <span>變卦</span>
+            <strong id="changedHex">未成卦</strong>
+            <small id="changedMeta">有動爻時顯示</small>
+          </div>
+          <div class="result-card">
+            <span>動爻</span>
+            <strong id="movingLines">未有</strong>
+            <small>老陰、老陽會成為動爻</small>
+          </div>
+
+          <label class="field-label" for="promptStyle">AI Prompt 風格</label>
+          <select id="promptStyle">
+            <option value="neutral">中立直解</option>
+            <option value="advisor">顧問式分析</option>
+            <option value="action">行動建議優先</option>
+          </select>
+
+          <label class="field-label" for="promptPack">問題場景</label>
+          <select id="promptPack">
+            <option value="decision" selected>決策 / 轉折</option>
+            <option value="relationship">感情 / 關係</option>
+            <option value="career">事業 / 工作</option>
+            <option value="wealth">財務 / 投資</option>
+          </select>
+
+          <div class="ai-links" aria-label="外部 AI 連結">
+            <a href="https://chatgpt.com" target="_blank" rel="noreferrer">ChatGPT</a>
+            <a href="https://claude.ai/new" target="_blank" rel="noreferrer">Claude</a>
+            <a href="https://gemini.google.com/app" target="_blank" rel="noreferrer">Gemini</a>
+          </div>
+        </aside>
+      </section>
+
+      <section class="prompt-section" id="promptSection" hidden>
+        <div class="section-heading">
+          <p class="system-label">Generated Prompt</p>
+          <h2>免費 prompt、Pro prompt、分享圖卡</h2>
+        </div>
+        <div class="prompt-layout">
+          <article class="prompt-card">
+            <div class="mini-heading">
+              <span>Free</span>
+              <strong>先取得完整卦象資料</strong>
+            </div>
+            <textarea id="promptOutput" readonly></textarea>
+          </article>
+
+          <article class="pro-card" id="pro">
+            <div class="mini-heading">
+              <span>Pro · HK$28</span>
+              <strong>把 AI 變成拆局顧問</strong>
+            </div>
+            <p class="pro-copy">
+              Pro 不是神秘答案，而是更完整的提問框架：令 AI 先拆核心矛盾，再按動爻、變卦、風險和下一步行動輸出。
+            </p>
+            <div class="pro-compare" aria-label="Free 與 Pro 對照">
+              <div>
+                <span>Free</span>
+                <strong>整理卦象資料</strong>
+                <p>適合先貼去外部 AI，取得基本卦象總覽、動爻、變卦和 3-5 條行動建議。</p>
+              </div>
+              <div>
+                <span>Pro</span>
+                <strong>顧問式拆局</strong>
+                <p>加入核心矛盾、決策矩陣、反證提醒、追問清單和 80 字行動摘要。</p>
+              </div>
+            </div>
+            <div class="pro-preview" id="proPreview">
+              已準備：場景化分析、3 條追問、行動矩陣、風險反證、可複製完整 prompt。
+            </div>
+            <textarea id="proPromptOutput" readonly hidden></textarea>
+            <div class="unlock-row">
+              <input id="unlockCode" type="text" inputmode="latin" placeholder="輸入解鎖碼" />
+              <button class="ghost-button" id="applyUnlock" type="button">解鎖</button>
+            </div>
+            <div class="pro-actions">
+              <a class="primary-link" id="checkoutLink" href="#" target="_blank" rel="noreferrer">HK$28 解鎖 Pro Prompt</a>
+              <button class="ghost-button" id="copyProButton" type="button" disabled>複製 Pro Prompt</button>
+            </div>
+            <small id="checkoutNote">未設定 Stripe Payment Link 時，按鈕會改用 WhatsApp 取得付款連結。</small>
+          </article>
+
+          <article class="share-card-panel">
+            <div class="mini-heading">
+              <span>Share</span>
+              <strong>生成分享圖卡</strong>
+            </div>
+            <canvas id="shareCanvas" width="1080" height="1350" aria-label="卦象分享圖卡"></canvas>
+            <div class="pro-actions">
+              <button class="ghost-button" id="generateShareCard" type="button">更新圖卡</button>
+              <button class="ghost-button" id="downloadShareCard" type="button">下載 PNG</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="history-section" id="fulfillment">
+        <div class="section-heading">
+          <p class="system-label">After Payment</p>
+          <h2>付款後如何取得 Pro Prompt</h2>
+        </div>
+        <div class="fulfillment-grid">
+          <article>
+            <strong>1. Stripe 付款</strong>
+            <p>按 HK$28 付款連結完成付款。卡資料由 Stripe 處理，網站不會接觸或儲存你的付款資料。</p>
+          </article>
+          <article>
+            <strong>2. WhatsApp 交收</strong>
+            <p>付款後把收據截圖或付款 email 發到 WhatsApp。若已起卦，可以一併附上問題、本卦和變卦。</p>
+          </article>
+          <article>
+            <strong>3. 收取解鎖碼</strong>
+            <p>核對後會回覆 Pro 解鎖碼。輸入一次後，此瀏覽器即可複製完整 Pro Prompt。</p>
+          </article>
+        </div>
+        <div class="fulfillment-actions">
+          <a class="primary-link" id="fulfillmentCheckout" href="#" target="_blank" rel="noreferrer">立即付款 HK$28</a>
+          <a class="ghost-link" id="deliveryWhatsApp" href="#" target="_blank" rel="noreferrer">付款後 WhatsApp 領取解鎖碼</a>
+        </div>
+        <div class="payment-checklist" aria-label="付款交付清單">
+          <strong>付款前後準備好三樣資料</strong>
+          <span>Stripe 收據截圖或付款 email</span>
+          <span>你的問題文字</span>
+          <span>如已起卦，附上本卦、變卦與動爻</span>
+        </div>
+      </section>
+
+      <section class="history-section" id="pricing">
+        <div class="section-heading">
+          <p class="system-label">Service Tiers</p>
+          <h2>三層產品 CTA</h2>
+        </div>
+        <div class="pricing-grid">
+          <article class="price-card">
+            <span>自助</span>
+            <strong>Pro Prompt</strong>
+            <div class="price">HK$28</div>
+            <p>適合想自己用 AI 拆卦的人：付款後取得解鎖碼，複製完整 Pro Prompt。</p>
+            <ul>
+              <li>完整六爻資料</li>
+              <li>動爻決策矩陣</li>
+              <li>反證提醒與追問</li>
+            </ul>
+            <a class="primary-link" id="tierProCheckout" href="#" target="_blank" rel="noreferrer">解鎖 Pro Prompt</a>
+          </article>
+          <article class="price-card is-featured">
+            <span>人工</span>
+            <strong>真人簡批</strong>
+            <div class="price">HK$188</div>
+            <p>適合單一問題，需要真人把卦象、動爻和下一步行動整理成短評。</p>
+            <ul>
+              <li>重點局勢判斷</li>
+              <li>3 條行動建議</li>
+              <li>一輪 WhatsApp 補充</li>
+            </ul>
+            <a class="primary-link" id="tierQuickConsult" href="#" target="_blank" rel="noreferrer">WhatsApp 預約簡批</a>
+          </article>
+          <article class="price-card">
+            <span>進階</span>
+            <strong>找大師父協助</strong>
+            <div class="price">HK$1680 起</div>
+            <p>適合重大轉折、長期困局或想由資深師父跟進的人，先 WhatsApp 了解背景與安排。</p>
+            <ul>
+              <li>先了解問題背景</li>
+              <li>由資深師父協助判斷</li>
+              <li>按個案深度報價與安排</li>
+            </ul>
+            <a class="primary-link" id="tierDeepConsult" href="#" target="_blank" rel="noreferrer">WhatsApp 找大師父協助</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="history-section" id="hexagram-library">
+        <div class="section-heading">
+          <p class="system-label">SEO Library</p>
+          <h2>64 卦 prompt 卦庫</h2>
+        </div>
+        <div class="library-intro">
+          <p>每一卦都有獨立靜態頁，方便搜尋引擎收錄「卦名 + AI prompt + 六爻起卦」長尾字。</p>
+          <a class="primary-link" href="./hexagrams/">打開 64 卦庫</a>
+        </div>
+      </section>
+
+      <section class="history-section" id="history">
+        <div class="section-heading">
+          <p class="system-label">Local History</p>
+          <h2>本機起卦紀錄</h2>
+        </div>
+        <div class="history-actions">
+          <p>紀錄只存在此瀏覽器，最多保留 30 筆。</p>
+          <button class="ghost-button" id="clearHistory" type="button">清除紀錄</button>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </section>
+
+      <section class="info-grid" id="commission">
+        <div>
+          <p class="system-label">Human Reading</p>
+          <h2>委託人工解卦</h2>
+          <p>
+            如果你想把本卦、變卦、動爻交給真人整理，可以先完成起卦，再連同問題背景發送到 WhatsApp。付款與委託都經外部 Stripe / WhatsApp 完成，此頁不儲存付款資料。
+          </p>
+        </div>
+        <div class="cta-stack">
+          <a class="primary-link" id="commissionCheckout" href="#" target="_blank" rel="noreferrer">購買 Pro Prompt</a>
+          <a class="ghost-link" id="whatsappConsult" href="#" target="_blank" rel="noreferrer">WhatsApp 委託拆卦</a>
+        </div>
+      </section>
+
+      <section class="info-grid trust-grid" id="trust">
+        <div>
+          <p class="system-label">Trust Boundary</p>
+          <h2>使用與付款邊界</h2>
+          <p>
+            這個工具用作整理問題、建立提問框架和輔助反思，不保證結果，也不替代法律、醫療、投資或重大人生決策意見。免費起卦資料留在本機；只有你主動複製、付款或 WhatsApp 聯絡時，資料才會送到外部服務。
+          </p>
+        </div>
+        <div class="method-list trust-list">
+          <span>本機起卦</span>
+          <span>Stripe 收款</span>
+          <span>WhatsApp 交付</span>
+          <span>不儲存卡資料</span>
+          <span>不替你作最終決定</span>
+        </div>
+      </section>
+
+      <section class="history-section risk-section" id="boundaries">
+        <div class="section-heading">
+          <p class="system-label">Responsible Use</p>
+          <h2>這個工具不適合用來做甚麼</h2>
+        </div>
+        <div class="risk-list">
+          <article>
+            <strong>不處理緊急或高風險決定</strong>
+            <p>醫療、法律、投資、債務或安全風險，請先找合資格專業人士。</p>
+          </article>
+          <article>
+            <strong>不鼓勵監控或操控他人</strong>
+            <p>感情與人際問題應回到溝通、界線和可行行動，不應用作猜心或控制。</p>
+          </article>
+          <article>
+            <strong>不保證結果，只整理方向</strong>
+            <p>卦象和 AI prompt 是反思框架，最後仍要由你按現實資料和責任作決定。</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="info-grid" id="about">
+        <div>
+          <p class="system-label">How It Works</p>
+          <h2>網站的邊界</h2>
+          <p>
+            所有銅錢、卦象、變卦和紀錄都在你的瀏覽器內完成。網站不連接 AI API，不把免費起卦資料送到伺服器；你只有在主動複製並貼到外部 AI 時，資料才會離開此頁。
+          </p>
+        </div>
+        <div class="method-list">
+          <span>三枚銅錢</span>
+          <span>六次成卦</span>
+          <span>本卦與變卦</span>
+          <span>高質量 Prompt</span>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./monetization.config.js?v=20260603-oss-en1" defer></script>
+    <script src="./app.js?v=20260603-oss-en1" defer></script>
+  </body>
+</html>

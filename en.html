@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="I Ching coin oracle: cast three coins six times, organize the primary hexagram, changed hexagram and moving lines, then generate a high-quality prompt for external AI."
+    />
+    <title>I Ching Coin Oracle · Six-Line Coin Casting</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="alternate" hreflang="zh-Hant-HK" href="./" />
+    <link rel="alternate" hreflang="en" href="./en.html" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css?v=20260603-oss-en1" />
+  </head>
+  <body>
+    <div class="cosmos" aria-hidden="true"></div>
+    <header class="site-header">
+      <a class="brand" href="#prepare" aria-label="Back to the oracle preparation page">
+        <span class="brand-mark">易</span>
+        <span>
+          <strong>I Ching Coin Oracle</strong>
+          <small>Six-Line Coin Casting</small>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#prepare">Cast</a>
+        <a href="#pro">Pro</a>
+        <a href="#pricing">Plans</a>
+        <a href="#hexagram-library">Library</a>
+        <a href="#history">History</a>
+        <a href="#commission">Consult</a>
+        <a href="#about">About</a>
+      </nav>
+      <div class="language" aria-label="Language">
+        <a href="./">繁中</a>
+        <span>|</span>
+        <a aria-current="page" href="./en.html">EN</a>
+      </div>
+    </header>
+
+    <main>
+      <section class="oracle-prep" id="prepare" aria-labelledby="prepTitle">
+        <div class="prep-inner">
+          <div class="prep-symbol" aria-hidden="true">
+            <div class="prep-bagua">
+              <span>乾</span>
+              <span>兌</span>
+              <span>離</span>
+              <span>震</span>
+              <span>巽</span>
+              <span>坎</span>
+              <span>艮</span>
+              <span>坤</span>
+            </div>
+            <div class="prep-coin-large"><span>易</span></div>
+          </div>
+          <p class="prep-kicker">Six Coins Cast · One Clear Question</p>
+          <h1 class="prep-title" id="prepTitle">
+            <span>Settle</span>
+            <span>Cast</span>
+          </h1>
+          <div class="prep-coin-row" aria-hidden="true">
+            <span>字</span>
+            <span>背</span>
+            <span>字</span>
+          </div>
+          <p class="prep-copy">
+            Pause first and clarify the one thing you truly want to ask. When ready, enter the six-line coin cast and generate a prompt you can paste into an external AI.
+          </p>
+          <a class="prep-start" id="startOracle" href="#oracle">Start Casting</a>
+        </div>
+      </section>
+
+      <section class="history-section usage-section" id="question-guide">
+        <div class="section-heading">
+          <p class="system-label">Before Casting</p>
+          <h2>Ask Clearly Before Casting</h2>
+        </div>
+        <div class="usage-grid">
+          <article>
+            <span>One matter</span>
+            <strong>Do not ask too many directions at once</strong>
+            <p>Narrow the question to one theme, such as work, relationship, finance or one specific choice.</p>
+          </article>
+          <article>
+            <span>One time frame</span>
+            <strong>Add a time frame that can be judged</strong>
+            <p>For example: this month, the next three months, or this collaboration. The AI reading becomes more practical.</p>
+          </article>
+          <article>
+            <span>One action</span>
+            <strong>Ask for the next step, not a fixed fate</strong>
+            <p>This tool helps you see the situation, risks and next step. It should not take away your own decision-making.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="oracle-shell" id="oracle">
+        <div class="intro-panel">
+          <p class="system-label">Three Coins · Six Lines · One Prompt</p>
+          <h1><span>Cast first,</span><span>then ask AI</span></h1>
+          <p class="lead">
+            Write your question clearly, then cast three coins line by line. The site organizes the primary hexagram, changed hexagram and moving lines from the first line upward, then generates a prompt for ChatGPT, Claude or Gemini.
+          </p>
+
+          <label class="field-label" for="question">Your Question</label>
+          <textarea
+            id="question"
+            maxlength="180"
+            placeholder="Example: Should I stabilize my current income this month, or actively explore new opportunities?"
+          ></textarea>
+          <div class="input-footer">
+            <span id="questionCount">0 / 180</span>
+            <button class="text-button" id="sampleQuestion" type="button">Use example</button>
+          </div>
+          <div class="question-helper" aria-label="Question writing tips">
+            <strong>Question guide</strong>
+            <ul>
+              <li>Clear actor: who is involved in this matter?</li>
+              <li>Clear timing: this month, three months, or one specific decision?</li>
+              <li>Clear action: are you judging whether to advance, wait, pivot or stop loss?</li>
+            </ul>
+          </div>
+
+          <div class="coin-stage" aria-live="polite">
+            <div class="coin-tray" id="coinTray">
+              <button class="coin" type="button" aria-label="Coin one" data-face="字">字</button>
+              <button class="coin" type="button" aria-label="Coin two" data-face="背">背</button>
+              <button class="coin" type="button" aria-label="Coin three" data-face="字">字</button>
+            </div>
+            <p id="castStatus">Ready to begin from the first line. Each cast tosses three coins, six times in total.</p>
+            <p class="method-note">
+              Method checked: character side = yin = 2, back side = yang = 3; 6 Old Yin, 7 Young Yang, 8 Young Yin, 9 Old Yang. Six casts build the hexagram from the first line upward; upper three lines form the outer trigram, lower three lines form the inner trigram.
+            </p>
+          </div>
+
+          <div class="controls">
+            <button class="primary-button" id="castButton" type="button">Cast line 1</button>
+            <button class="ghost-button" id="resetButton" type="button">Reset</button>
+            <button class="ghost-button" id="copyButton" type="button" disabled>Copy AI Prompt</button>
+          </div>
+
+          <div class="gesture-panel" aria-live="polite">
+            <div class="gesture-copy">
+              <span class="system-label">Camera Gesture</span>
+              <strong>Snap to Cast a Line</strong>
+              <p>
+                For a stronger ritual feel, enable camera and microphone. Recognition runs only in your browser; a visible snap gesture or short crisp snap sound will cast the next line.
+              </p>
+            </div>
+            <div class="camera-frame" id="cameraFrame">
+              <video id="gestureVideo" playsinline muted></video>
+              <canvas id="gestureCanvas" aria-hidden="true"></canvas>
+              <span id="gestureBadge">Camera off</span>
+            </div>
+            <div class="gesture-controls">
+              <button class="ghost-button" id="startGesture" type="button">Enable camera + audio</button>
+              <button class="ghost-button" id="stopGesture" type="button" disabled>Stop</button>
+            </div>
+            <label class="sensitivity-control" for="snapSensitivity">
+              <span>Audio sensitivity</span>
+              <select id="snapSensitivity">
+                <option value="normal" selected>Normal</option>
+                <option value="sensitive">Sensitive</option>
+                <option value="strict">Strict</option>
+              </select>
+            </label>
+            <p class="gesture-status" id="gestureStatus">
+              Experimental: place your hand in the centre of the camera. Bring thumb and middle finger close before snapping; audio detection listens for a short crisp high-frequency peak.
+            </p>
+            <div class="gesture-diagnostics" aria-label="Snap detection diagnostics">
+              <div class="signal-row">
+                <span>Microphone peak</span>
+                <div class="signal-track"><i id="audioMeter"></i></div>
+                <strong id="audioReadout">Waiting</strong>
+              </div>
+              <div class="signal-row">
+                <span>High-frequency ratio</span>
+                <div class="signal-track"><i id="frequencyMeter"></i></div>
+                <strong id="frequencyReadout">Waiting</strong>
+              </div>
+              <div class="signal-row">
+                <span>Hand model</span>
+                <div class="signal-track"><i id="visionMeter"></i></div>
+                <strong id="visionReadout">Not loaded</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hexagram-panel" aria-label="Six-line hexagram">
+          <div class="panel-heading">
+            <span>Hexagram</span>
+            <strong id="progressLabel">0 / 6</strong>
+          </div>
+          <div class="line-stack" id="lineStack"></div>
+          <div class="legend">
+            <span><i class="legend-yang"></i>Yang line</span>
+            <span><i class="legend-yin"></i>Yin line</span>
+            <span><i class="legend-moving"></i>Moving line</span>
+          </div>
+        </div>
+
+        <aside class="reading-panel">
+          <div class="result-card">
+            <span>Primary Hexagram</span>
+            <strong id="primaryHex">Not cast yet</strong>
+            <small id="primaryMeta">Shown after six lines</small>
+          </div>
+          <div class="result-card">
+            <span>Changed Hexagram</span>
+            <strong id="changedHex">Not cast yet</strong>
+            <small id="changedMeta">Shown when moving lines appear</small>
+          </div>
+          <div class="result-card">
+            <span>Moving Lines</span>
+            <strong id="movingLines">None yet</strong>
+            <small>Old Yin and Old Yang become moving lines</small>
+          </div>
+
+          <label class="field-label" for="promptStyle">AI Prompt Style</label>
+          <select id="promptStyle">
+            <option value="neutral">Neutral reading</option>
+            <option value="advisor">Consultant analysis</option>
+            <option value="action">Action-first advice</option>
+          </select>
+
+          <label class="field-label" for="promptPack">Question Scenario</label>
+          <select id="promptPack">
+            <option value="decision" selected>Decision / turning point</option>
+            <option value="relationship">Relationship</option>
+            <option value="career">Career / work</option>
+            <option value="wealth">Finance / investing</option>
+          </select>
+
+          <div class="ai-links" aria-label="External AI links">
+            <a href="https://chatgpt.com" target="_blank" rel="noreferrer">ChatGPT</a>
+            <a href="https://claude.ai/new" target="_blank" rel="noreferrer">Claude</a>
+            <a href="https://gemini.google.com/app" target="_blank" rel="noreferrer">Gemini</a>
+          </div>
+        </aside>
+      </section>
+
+      <section class="prompt-section" id="promptSection" hidden>
+        <div class="section-heading">
+          <p class="system-label">Generated Prompt</p>
+          <h2>Free prompt, Pro prompt and share card</h2>
+        </div>
+        <div class="prompt-layout">
+          <article class="prompt-card">
+            <div class="mini-heading">
+              <span>Free</span>
+              <strong>Get the complete hexagram data first</strong>
+            </div>
+            <textarea id="promptOutput" readonly></textarea>
+          </article>
+
+          <article class="pro-card" id="pro">
+            <div class="mini-heading">
+              <span>Pro · HK$28</span>
+              <strong>Turn AI into a situation analyst</strong>
+            </div>
+            <p class="pro-copy">
+              Pro is not a mystical answer. It is a stronger prompting framework that makes AI identify the core tension first, then respond through moving lines, changed hexagram, risks and next actions.
+            </p>
+            <div class="pro-compare" aria-label="Free and Pro comparison">
+              <div>
+                <span>Free</span>
+                <strong>Organizes hexagram data</strong>
+                <p>Good for pasting into an external AI to get a basic overview, moving lines, changed hexagram and 3-5 action suggestions.</p>
+              </div>
+              <div>
+                <span>Pro</span>
+                <strong>Consultant-style breakdown</strong>
+                <p>Adds core tension, decision matrix, counter-checks, follow-up questions and an 80-word action summary.</p>
+              </div>
+            </div>
+            <div class="pro-preview" id="proPreview">
+              Prepared: contextual analysis, 3 follow-up questions, action matrix, risk counter-checks and copy-ready prompt.
+            </div>
+            <textarea id="proPromptOutput" readonly hidden></textarea>
+            <div class="unlock-row">
+              <input id="unlockCode" type="text" inputmode="latin" placeholder="Enter unlock code" />
+              <button class="ghost-button" id="applyUnlock" type="button">Unlock</button>
+            </div>
+            <div class="pro-actions">
+              <a class="primary-link" id="checkoutLink" href="#" target="_blank" rel="noreferrer">Unlock Pro Prompt · HK$28</a>
+              <button class="ghost-button" id="copyProButton" type="button" disabled>Copy Pro Prompt</button>
+            </div>
+            <small id="checkoutNote">If Stripe Payment Link is not configured, the button falls back to WhatsApp payment handling.</small>
+          </article>
+
+          <article class="share-card-panel">
+            <div class="mini-heading">
+              <span>Share</span>
+              <strong>Generate a share card</strong>
+            </div>
+            <canvas id="shareCanvas" width="1080" height="1350" aria-label="Hexagram share card"></canvas>
+            <div class="pro-actions">
+              <button class="ghost-button" id="generateShareCard" type="button">Update card</button>
+              <button class="ghost-button" id="downloadShareCard" type="button">Download PNG</button>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="history-section" id="fulfillment">
+        <div class="section-heading">
+          <p class="system-label">After Payment</p>
+          <h2>How to Receive the Pro Prompt After Payment</h2>
+        </div>
+        <div class="fulfillment-grid">
+          <article>
+            <strong>1. Pay with Stripe</strong>
+            <p>Use the HK$28 payment link. Card details are handled by Stripe; this website does not touch or store your card information.</p>
+          </article>
+          <article>
+            <strong>2. Deliver through WhatsApp</strong>
+            <p>After payment, send the receipt screenshot or payment email through WhatsApp. If you have already cast, include your question, primary hexagram and changed hexagram.</p>
+          </article>
+          <article>
+            <strong>3. Receive the unlock code</strong>
+            <p>After verification, the Pro unlock code will be sent back. Enter it once and this browser can copy the full Pro Prompt.</p>
+          </article>
+        </div>
+        <div class="fulfillment-actions">
+          <a class="primary-link" id="fulfillmentCheckout" href="#" target="_blank" rel="noreferrer">Pay HK$28 Now</a>
+          <a class="ghost-link" id="deliveryWhatsApp" href="#" target="_blank" rel="noreferrer">WhatsApp after payment</a>
+        </div>
+        <div class="payment-checklist" aria-label="Payment delivery checklist">
+          <strong>Prepare these three items before or after payment</strong>
+          <span>Stripe receipt screenshot or payment email</span>
+          <span>Your question text</span>
+          <span>If already cast, include the primary hexagram, changed hexagram and moving lines</span>
+        </div>
+      </section>
+
+      <section class="history-section" id="pricing">
+        <div class="section-heading">
+          <p class="system-label">Service Tiers</p>
+          <h2>Three Product Paths</h2>
+        </div>
+        <div class="pricing-grid">
+          <article class="price-card">
+            <span>Self-serve</span>
+            <strong>Pro Prompt</strong>
+            <div class="price">HK$28</div>
+            <p>For users who want to analyze the cast with AI themselves: pay, receive an unlock code and copy the full Pro Prompt.</p>
+            <ul>
+              <li>Complete six-line data</li>
+              <li>Moving-line decision matrix</li>
+              <li>Counter-checks and follow-up questions</li>
+            </ul>
+            <a class="primary-link" id="tierProCheckout" href="#" target="_blank" rel="noreferrer">Unlock Pro Prompt</a>
+          </article>
+          <article class="price-card is-featured">
+            <span>Human</span>
+            <strong>Human Quick Reading</strong>
+            <div class="price">HK$188</div>
+            <p>For one clear question where you want a human to summarize the hexagram, moving lines and next actions.</p>
+            <ul>
+              <li>Key situation judgment</li>
+              <li>3 action suggestions</li>
+              <li>One WhatsApp follow-up</li>
+            </ul>
+            <a class="primary-link" id="tierQuickConsult" href="#" target="_blank" rel="noreferrer">Book quick reading on WhatsApp</a>
+          </article>
+          <article class="price-card">
+            <span>Advanced</span>
+            <strong>Senior Master Consultation</strong>
+            <div class="price">From HK$1680</div>
+            <p>For major turning points, long-running situations or cases needing a senior practitioner. Start with WhatsApp to discuss context and arrangement.</p>
+            <ul>
+              <li>Review the background first</li>
+              <li>Senior practitioner assistance</li>
+              <li>Quoted and arranged by case depth</li>
+            </ul>
+            <a class="primary-link" id="tierDeepConsult" href="#" target="_blank" rel="noreferrer">WhatsApp Senior Master Consultation</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="history-section" id="hexagram-library">
+        <div class="section-heading">
+          <p class="system-label">SEO Library</p>
+          <h2>64-Hexagram Prompt Library</h2>
+        </div>
+        <div class="library-intro">
+          <p>Each hexagram has its own static page, helping search engines index long-tail terms around hexagram names, AI prompts and six-line coin casting.</p>
+          <a class="primary-link" href="./hexagrams/">Open the 64-hexagram library</a>
+        </div>
+      </section>
+
+      <section class="history-section" id="history">
+        <div class="section-heading">
+          <p class="system-label">Local History</p>
+          <h2>Local Casting History</h2>
+        </div>
+        <div class="history-actions">
+          <p>Records exist only in this browser, up to 30 entries.</p>
+          <button class="ghost-button" id="clearHistory" type="button">Clear history</button>
+        </div>
+        <div class="history-list" id="historyList"></div>
+      </section>
+
+      <section class="info-grid" id="commission">
+        <div>
+          <p class="system-label">Human Reading</p>
+          <h2>Request a Human Reading</h2>
+          <p>
+            If you want a human to organize the primary hexagram, changed hexagram and moving lines, complete a cast first and send it with your background through WhatsApp. Payment and consultation are handled through external Stripe / WhatsApp; this page does not store payment data.
+          </p>
+        </div>
+        <div class="cta-stack">
+          <a class="primary-link" id="commissionCheckout" href="#" target="_blank" rel="noreferrer">Buy Pro Prompt</a>
+          <a class="ghost-link" id="whatsappConsult" href="#" target="_blank" rel="noreferrer">Request reading on WhatsApp</a>
+        </div>
+      </section>
+
+      <section class="info-grid trust-grid" id="trust">
+        <div>
+          <p class="system-label">Trust Boundary</p>
+          <h2>Use and Payment Boundaries</h2>
+          <p>
+            This tool is for organizing questions, building a prompting framework and supporting reflection. It does not guarantee outcomes and does not replace legal, medical, investment or major life advice. Free casting data stays local; it leaves this page only when you copy it, pay, or contact through WhatsApp.
+          </p>
+        </div>
+        <div class="method-list trust-list">
+          <span>Local casting</span>
+          <span>Stripe payment</span>
+          <span>WhatsApp delivery</span>
+          <span>No card data stored</span>
+          <span>Does not make final decisions for you</span>
+        </div>
+      </section>
+
+      <section class="history-section risk-section" id="boundaries">
+        <div class="section-heading">
+          <p class="system-label">Responsible Use</p>
+          <h2>What This Tool Is Not For</h2>
+        </div>
+        <div class="risk-list">
+          <article>
+            <strong>Not for urgent or high-risk decisions</strong>
+            <p>For medical, legal, investing, debt or safety risks, consult qualified professionals first.</p>
+          </article>
+          <article>
+            <strong>Does not encourage monitoring or manipulating others</strong>
+            <p>Relationship and interpersonal questions should return to communication, boundaries and practical action, not mind-reading or control.</p>
+          </article>
+          <article>
+            <strong>Does not guarantee outcomes; it organizes direction</strong>
+            <p>The hexagram and AI prompt are reflection frameworks. Final decisions still depend on real-world facts and your own responsibility.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="info-grid" id="about">
+        <div>
+          <p class="system-label">How It Works</p>
+          <h2>How the Site Works</h2>
+          <p>
+            All coin tosses, hexagrams, changed hexagrams and records are handled inside your browser. The site does not call an AI API and does not send free casting data to a server; it leaves this page only when you copy and paste it into an external AI.
+          </p>
+        </div>
+        <div class="method-list">
+          <span>Three coins</span>
+          <span>Six casts</span>
+          <span>Primary and changed hexagrams</span>
+          <span>High-quality prompt</span>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="./monetization.config.js?v=20260603-oss-en1" defer></script>
+    <script src="./app.js?v=20260603-oss-en1" defer></script>
+  </body>
+</html>
