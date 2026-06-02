@@ -4,6 +4,11 @@ An open-source static website for learning and experimenting with the I Ching si
 
 本專案以推廣易經文化為目的：用三枚銅錢擲六次起卦，在瀏覽器內整理本卦、變卦、動爻，再生成可貼去外部 AI 的解卦 prompt。介面提供繁體中文及英文版本，方便香港及海外用戶理解。
 
+## Live Demo
+
+- Traditional Chinese: https://iching-coin-oracle.pages.dev/
+- English: https://iching-coin-oracle.pages.dev/en.html
+
 ## Features
 
 - Six-line three-coin casting method, built from the first line upward.
