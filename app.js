@@ -72,12 +72,12 @@ const promptPacks = {
   decision: {
     label: ui("決策 / 轉折", "Decision / turning point"),
     focus: ui(
-      "請把重點放在選擇、時機、取捨、風險和下一步行動；不要只給抽象性格描述。",
-      "Focus on choices, timing, trade-offs, risk and the next practical move. Do not give abstract personality descriptions only."
+      "請把重點放在我現在應該前進、等待、轉方向，還是先停一停；每個建議都要講成日常人聽得明的說法。",
+      "Focus on whether I should move ahead, wait, change direction or pause first. Every suggestion must be written in everyday language."
     ),
     pro: ui(
-      "輸出一個決策矩陣：立即做、暫緩、避免、需要補資料；每項都要扣回本卦、動爻和變卦。",
-      "Create a decision matrix: do now, pause, avoid, and information still needed. Tie each item back to the primary hexagram, moving lines and changed hexagram."
+      "輸出一張白話下一步清單：今日可做、今個星期可做、暫時不要做、還要問清楚；每項都要短而實際。",
+      "Create a plain next-step list: what to do today, what to do this week, what not to do yet, and what to clarify. Keep each item short and practical."
     ),
     questions: ui(
       "列出 3 條我應該補充給 AI 或真人顧問的背景資料問題。",
@@ -87,12 +87,12 @@ const promptPacks = {
   relationship: {
     label: ui("感情 / 關係", "Relationship"),
     focus: ui(
-      "請把重點放在互動模式、界線、溝通節奏、誤會來源和可修復空間；避免操控式建議。",
-      "Focus on interaction patterns, boundaries, communication rhythm, sources of misunderstanding and repairable space. Avoid manipulative advice."
+      "請把重點放在兩個人現在怎樣相處、哪裏容易誤會、應該怎樣開口；不要叫我猜心、試探或操控對方。",
+      "Focus on how the people are relating now, where misunderstanding may happen, and how to speak clearly. Do not suggest mind-reading, testing or controlling the other person."
     ),
     pro: ui(
-      "輸出關係動態拆解：我方位置、對方可能壓力、關係中的反覆模式、應該說與不應該說的話。",
-      "Break down the relationship dynamic: my position, likely pressure on the other person, recurring patterns, what to say and what not to say."
+      "輸出白話關係清單：我現在的位置、對方可能感到的壓力、應該講的話、不應該講的話。",
+      "Create a plain relationship list: where I stand, what pressure the other person may feel, what to say and what not to say."
     ),
     questions: ui(
       "列出 3 條有助釐清關係狀態的追問，不要鼓勵猜心或監控。",
@@ -102,12 +102,12 @@ const promptPacks = {
   career: {
     label: ui("事業 / 工作", "Career / work"),
     focus: ui(
-      "請把重點放在工作局勢、資源配置、合作風險、職涯路線和短期可執行動作。",
-      "Focus on the work situation, resource allocation, collaboration risk, career route and short-term executable actions."
+      "請把重點放在工作上現在最卡的是人、錢、時間、機會還是能力；然後講短期可以做的實際步驟。",
+      "Focus on what is most stuck at work now: people, money, time, opportunity or ability. Then give practical short-term steps."
     ),
     pro: ui(
-      "輸出事業行動表：可立即推進的任務、要避開的內耗、應該爭取的資源、30 日內檢查指標。",
-      "Create a career action table: tasks to push now, internal friction to avoid, resources to ask for, and review indicators within 30 days."
+      "輸出白話工作清單：先推哪件事、避開哪種內耗、應該向誰爭取什麼、30 日內看什麼結果。",
+      "Create a plain work list: what to push first, what friction to avoid, who to ask for what, and what result to check within 30 days."
     ),
     questions: ui(
       "列出 3 條工作背景追問，例如角色、權限、收入壓力、團隊關係或市場窗口。",
@@ -117,12 +117,12 @@ const promptPacks = {
   wealth: {
     label: ui("財務 / 投資", "Finance / investing"),
     focus: ui(
-      "請把重點放在現金流、風險承受、節制、時機和決策紀律；不要作保證收益或投資指令。",
-      "Focus on cash flow, risk tolerance, restraint, timing and decision discipline. Do not promise returns or give investment orders."
+      "請把重點放在我承不承受得起、最壞情況會怎樣、應否先保留現金；不要保證賺錢，也不要直接叫我買或賣。",
+      "Focus on whether I can afford the risk, what the worst case may be, and whether I should keep cash first. Do not promise profit or directly tell me to buy or sell."
     ),
     pro: ui(
-      "輸出財務風險表：可控風險、不可控風險、最壞情境、止蝕/停手機制和需要再核實的資料。",
-      "Create a financial risk table: controllable risks, uncontrollable risks, worst case, stop-loss / pause mechanism and facts to verify."
+      "輸出白話財務清單：我控制到的風險、控制不到的風險、最壞情況、幾時要停手、還要查清楚什麼。",
+      "Create a plain finance list: risks I can control, risks I cannot control, the worst case, when to stop, and what facts to verify."
     ),
     questions: ui(
       "列出 3 條財務背景追問，例如時間線、金額比例、流動性、家庭責任或債務壓力。",
@@ -496,8 +496,8 @@ function updatePromptOutputs(reading = getReading()) {
     els.proPromptOutput.hidden = true;
     els.proPromptOutput.value = "";
     els.proPreview.textContent = ui(
-      "已準備：場景化分析、3 條追問、行動矩陣、風險反證、可複製完整 prompt。",
-      "Prepared: contextual analysis, 3 follow-up questions, action matrix, risk counter-checks and copy-ready prompt."
+      "已準備：白話拆局、3 條追問、下一步清單、容易看錯的地方、可複製完整 prompt。",
+      "Prepared: plain-language reading, 3 follow-up questions, next-step list, easy-to-misread points and copy-ready prompt."
     );
     els.copyProButton.disabled = true;
   }
@@ -1269,13 +1269,20 @@ Reading requirements:
 ${styleText}
 ${pack.focus}
 
-Please answer in English. Keep the Chinese hexagram names visible because they carry the cultural source text. Use this structure:
-1. Hexagram overview: the main situation shown by the primary hexagram.
-2. Question fit: how this hexagram responds to my specific question.
-3. Moving-line analysis: explain each moving line if present; if none, explain why the primary hexagram is the focus.
-4. Changed direction: if there is a changed hexagram, explain how the situation may develop.
-5. Action advice: list 3-5 executable suggestions, avoiding vague slogans.
-6. Risks and reminders: point out where I may misread the situation or push too hard.`
+Plain-language rules:
+- Answer in simple everyday English. Assume the reader has never studied I Ching and may not know academic words.
+- Do not use jargon. If you must mention a term such as moving line or changed hexagram, explain it immediately in plain words.
+- Use short sentences. Prefer concrete examples from daily life over abstract theory.
+- Be respectful and practical. Do not sound mysterious, superior or academic.
+
+Use this structure:
+1. One-sentence answer: say the main message in plain words.
+2. What is happening now: explain the situation like speaking to a normal person.
+3. What is changing: if there are moving lines, explain them as "the part that is changing"; if none, say the situation is steadier and the main hexagram matters most.
+4. What may happen next: explain the changed hexagram in simple words; if none, do not force a future prediction.
+5. What I can do: list 3-5 simple actions.
+6. What not to do: list 2-3 traps or wrong moves.
+7. Final reminder: I still need to decide and act for myself.`
     : `你是一位熟悉《易經》六爻銅錢起卦的解卦者。請根據以下資料作分析，而不是重新起卦。
 
 用戶問題：
@@ -1302,32 +1309,40 @@ ${changedText}
 ${styleText}
 ${pack.focus}
 
-請用繁體中文回答，並按以下結構輸出：
-1. 卦象總覽：本卦代表的主要局勢。
-2. 問題對應：此卦如何回應我的具體問題。
-3. 動爻分析：如有動爻，逐一說明每條動爻的轉折；如無動爻，說明為何重點在本卦。
-4. 變卦方向：如有變卦，說明局勢可能如何發展。
-5. 行動建議：列出 3-5 條可執行建議，避免空泛口號。
-6. 風險與提醒：指出最容易誤判或過度用力之處。`;
+白話要求：
+- 請用香港人看得明的繁體中文回答，越淺白越好。
+- 假設讀者完全不懂《易經》，也不懂術語；不要拋書面字、古文或玄學術語。
+- 如果一定要提「本卦、動爻、變卦」，要即刻用白話解釋，例如「現在的情況」、「正在變的地方」、「之後可能變成的方向」。
+- 每句要短，像真人慢慢解釋給街坊聽。不要扮高深，不要用恐嚇語氣。
+- 多用生活例子，少用抽象道理。
+
+請按以下結構輸出：
+1. 一句話答案：先用一句最淺白的話講重點。
+2. 現在發生咩事：用日常說法解釋這個卦在講什麼。
+3. 邊度正在變：如有動爻，講清楚哪幾個地方正在變；如無動爻，就講局勢較穩，重點在當前情況。
+4. 之後可能點走：如有變卦，用白話講可能變成什麼情況；如無變卦，不要硬作預言。
+5. 我可以做咩：列出 3-5 件簡單、做得到的事。
+6. 我不要做咩：列出 2-3 個最容易做錯的位。
+7. 最後提醒：講清楚卦只提供提醒，最後仍要自己決定和行動。`;
 
   if (mode !== "pro") return `${basePrompt}
 
 ${PROMPT_CLOSING_CALL}`;
 
-  const proRequirements = IS_EN ? `Pro advanced requirements:
-1. First identify the most likely core tension in 5 sentences or fewer. Tie it to the hexagram name, upper/lower trigrams, moving lines or absence of moving lines.
+  const proRequirements = IS_EN ? `Pro plain-language deepening:
+1. First explain the real stuck point in 5 short sentences or fewer. Use plain words, not theory.
 2. ${pack.pro}
-3. Moving-line decision matrix: for each moving line, list "what is changing", "what to follow", "what not to force" and "signals to watch".
-4. Counter-checks: list 3 assumptions that could make this reading inaccurate, and remind me not to treat the hexagram as a guarantee.
-5. Next questions: ${pack.questions}
-6. End with an action summary under 80 words that I can paste into my notes.`
-    : `Pro 進階要求：
-1. 先用 5 句以內指出此問題最可能的核心矛盾，必須扣回卦名、上下卦、動爻或無動爻。
+3. Simple next-step list: "do first", "wait first", "do not force", and "what sign to watch". Keep every item short.
+4. Where I may be wrong: list 3 things that could make this reading less accurate. Remind me not to treat the hexagram as a guarantee.
+5. Questions to clarify next: ${pack.questions}
+6. End with an action summary under 80 words that a normal person can paste into notes and understand immediately.`
+    : `Pro 白話加強要求：
+1. 先用 5 句以內講出真正卡住的地方。要用普通人聽得明的話，不要講理論。
 2. ${pack.pro}
-3. 動爻決策矩陣：每條動爻分別列出「正在變的事」、「應順勢做」、「不應硬推」、「觀察信號」。
-4. 反證提醒：列出 3 個可能令本次解讀失準的前提，提醒我不要把卦意當成保證。
-5. 下一步提問：${pack.questions}
-6. 輸出一段 80 字內的行動摘要，讓我可以直接貼到備忘錄。`;
+3. 簡單下一步清單：先做什麼、先等等什麼、不要硬推什麼、觀察什麼信號。每項要短。
+4. 我可能看錯的地方：列出 3 個可能令今次解讀不準的原因，提醒我不要把卦當成保證。
+5. 下一步要問清楚的問題：${pack.questions}
+6. 輸出一段 80 字內的行動摘要，要普通人一看就明，可以直接貼到備忘錄。`;
 
   return `${basePrompt}
 

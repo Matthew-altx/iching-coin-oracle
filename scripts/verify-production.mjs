@@ -82,8 +82,16 @@ const checks = {
     && englishPage.text.includes("Start Casting"),
   hasEnglishPromptSupport: app.ok
     && app.text.includes("UI_LANG")
-    && app.text.includes("Please answer in English")
-    && app.text.includes("Pro advanced requirements"),
+    && app.text.includes("Answer in simple everyday English")
+    && app.text.includes("Pro plain-language deepening"),
+  hasPlainLanguagePrompt: app.ok
+    && app.text.includes("白話要求")
+    && app.text.includes("假設讀者完全不懂《易經》")
+    && app.text.includes("不要拋書面字、古文或玄學術語")
+    && app.text.includes("One-sentence answer")
+    && app.text.includes("Do not use jargon")
+    && homepage.text.includes("白話提問框架")
+    && englishPage.text.includes("plain-language prompting framework"),
   hasFiveFingerFullCast: homepage.text.includes("五指合攏一手成卦")
     && homepage.text.includes("命運皆掌控在你手")
     && englishPage.text.includes("Close Five Fingers for a Full Cast")
