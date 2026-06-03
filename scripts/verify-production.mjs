@@ -18,6 +18,15 @@ function extractConfigValue(configText, key) {
   return match ? match[1].trim() : "";
 }
 
+function getHeader(headers, key) {
+  return headers[key.toLowerCase()] || "";
+}
+
+function headerIncludes(headers, key, fragments) {
+  const value = getHeader(headers, key);
+  return fragments.every((fragment) => value.includes(fragment));
+}
+
 const homepage = await read(`${baseUrl}/`);
 const englishPage = await read(`${baseUrl}/en.html`);
 const config = await read(`${baseUrl}/monetization.config.js`);
@@ -29,11 +38,42 @@ const checkoutUrl = extractConfigValue(config.text, "checkoutUrl");
 const whatsappNumber = extractConfigValue(config.text, "whatsappNumber");
 const unlockCodeHash = extractConfigValue(config.text, "unlockCodeHash");
 
+const cspRequiredFragments = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "script-src 'self' 'wasm-unsafe-eval' https://cdn.jsdelivr.net",
+  "style-src 'self' https://fonts.googleapis.com",
+  "font-src 'self' https://fonts.gstatic.com",
+  "connect-src 'self' https://cdn.jsdelivr.net https://storage.googleapis.com",
+  "frame-src 'none'",
+  "upgrade-insecure-requests",
+];
+const permissionsRequiredFragments = [
+  "camera=(self)",
+  "microphone=(self)",
+  "geolocation=()",
+  "payment=()",
+  "usb=()",
+  "serial=()",
+  "bluetooth=()",
+  "browsing-topics=()",
+];
+
 const checks = {
   homepage200: homepage.ok,
   englishPage200: englishPage.ok,
   config200: config.ok,
   configMustRevalidate: config.headers["cache-control"]?.includes("must-revalidate") || false,
+  hasContentSecurityPolicy: headerIncludes(homepage.headers, "content-security-policy", cspRequiredFragments),
+  appHasContentSecurityPolicy: headerIncludes(app.headers, "content-security-policy", cspRequiredFragments),
+  hasXContentTypeOptions: getHeader(homepage.headers, "x-content-type-options") === "nosniff",
+  hasReferrerPolicy: getHeader(homepage.headers, "referrer-policy") === "strict-origin-when-cross-origin",
+  hasPermissionsPolicy: headerIncludes(homepage.headers, "permissions-policy", permissionsRequiredFragments),
+  hasFrameProtection: getHeader(homepage.headers, "x-frame-options") === "DENY",
+  hasModernXssPolicy: getHeader(homepage.headers, "x-xss-protection") === "0",
+  hasStrictTransportSecurity: headerIncludes(homepage.headers, "strict-transport-security", ["max-age=31536000", "includeSubDomains"]),
   hasVersionedConfigScript: homepage.text.includes("monetization.config.js?v="),
   hasBilingualNavigation: homepage.text.includes('href="./en.html"')
     && englishPage.text.includes('lang="en"')
