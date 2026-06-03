@@ -4,6 +4,10 @@ const MEDIAPIPE_VERSION = "0.10.35";
 const SNAP_COOLDOWN_MS = 1400;
 const SNAP_PRIME_WINDOW_MS = 700;
 const AUDIO_SNAP_COOLDOWN_MS = 1100;
+const FIVE_FINGER_CAST_HOLD_MS = 620;
+const FIVE_FINGER_CAST_COOLDOWN_MS = 3800;
+const FIVE_FINGER_CAST_SPREAD = 0.72;
+const FINGER_TIP_INDEXES = [4, 8, 12, 16, 20];
 const UI_LANG = document.documentElement.lang?.toLowerCase().startsWith("en") ? "en" : "zh";
 const IS_EN = UI_LANG === "en";
 function ui(zh, en) {
@@ -17,8 +21,8 @@ function coinFaceText(face) {
   return face === "背" ? "back" : "character";
 }
 const GESTURE_IDLE_STATUS = ui(
-  "實驗功能：請把手放在鏡頭中央，打響指前先讓拇指和中指短暫貼近；聲音偵測會聽短促而清脆的高頻峰值。",
-  "Experimental: place your hand in the centre of the camera. Bring thumb and middle finger close before snapping; audio detection listens for a short crisp high-frequency peak."
+  "實驗功能：打響指會逐爻擲卦；五指合攏並保持一瞬，會一鍵出六爻。聲音偵測會聽短促而清脆的高頻峰值。",
+  "Experimental: snap to cast line by line; close all five fingers and hold briefly to cast all six lines. Audio detection listens for a short crisp high-frequency peak."
 );
 const PROMPT_CLOSING_CALL = "卦示機緣，人行方成。多行善事，自得善果。未來所有命運仍掌握在你的手上。";
 const PRO_UNLOCK_KEY = "iching.coin.pro.v1";
@@ -299,8 +303,11 @@ const state = {
     lastDistance: null,
     lastMiddleTip: null,
     primedAt: 0,
+    fiveFoldStartedAt: 0,
     lastTriggerAt: 0,
     lastAudioTriggerAt: 0,
+    lastFullCastAt: 0,
+    lastTipSpread: null,
     audioBaseline: 0.018,
     audioPeakHold: 0,
     lastRms: 0,
@@ -696,6 +703,8 @@ async function startGestureCamera() {
     state.gesture.lastDistance = null;
     state.gesture.lastMiddleTip = null;
     state.gesture.primedAt = 0;
+    state.gesture.fiveFoldStartedAt = 0;
+    state.gesture.lastTipSpread = null;
     if (stream.getVideoTracks().length) {
       els.gestureVideo.srcObject = stream;
       els.gestureVideo.play().catch(() => {
@@ -718,7 +727,7 @@ async function startGestureCamera() {
       updateDiagnostics({ vision: "ready" });
       setGestureStatus(
         stream.getVideoTracks().length
-          ? ui("相機與聲音已開啟。打響指時，手勢或清脆聲音命中都會擲下一爻。", "Camera and audio are active. A visible snap gesture or crisp snap sound will cast the next line.")
+          ? ui("相機與聲音已開啟。打響指逐爻擲卦；五指合攏保持一瞬，會一手出六爻。", "Camera and audio are active. Snap to cast line by line; close five fingers briefly to cast all six lines.")
           : ui("聲音識別已開啟；未有相機畫面，所以只用響指聲觸發。", "Audio detection is active. No camera view is available, so snap sound alone will trigger casting."),
         stream.getVideoTracks().length ? ui("等待手勢/聲音", "Waiting") : ui("只用聲音", "Audio only")
       );
@@ -790,6 +799,8 @@ function stopGestureCamera() {
   state.gesture.lastDistance = null;
   state.gesture.lastMiddleTip = null;
   state.gesture.primedAt = 0;
+  state.gesture.fiveFoldStartedAt = 0;
+  state.gesture.lastTipSpread = null;
   state.gesture.audioPeakHold = 0;
   state.gesture.lastRms = 0;
   state.gesture.lastHighRatio = 0;
@@ -858,10 +869,15 @@ function handleGestureResult(result, now) {
     state.gesture.lastDistance = null;
     state.gesture.lastMiddleTip = null;
     state.gesture.primedAt = 0;
+    state.gesture.fiveFoldStartedAt = 0;
+    state.gesture.lastTipSpread = null;
     return;
   }
 
   drawGestureOverlay(landmarks);
+  const fullCastGesture = analyzeFiveFingerCloseGesture(landmarks, now);
+  if (fullCastGesture) return;
+
   const snap = analyzeSnapGesture(landmarks, now);
   if (!snap) return;
 
@@ -870,14 +886,69 @@ function handleGestureResult(result, now) {
   window.setTimeout(() => els.cameraFrame.classList.remove("is-triggered"), 420);
 }
 
+function analyzeFiveFingerCloseGesture(landmarks, now) {
+  const palmScale = getPalmScale(landmarks);
+  const tipSpread = getTipSpread(landmarks, palmScale);
+  state.gesture.lastTipSpread = tipSpread;
+
+  if (tipSpread > FIVE_FINGER_CAST_SPREAD) {
+    state.gesture.fiveFoldStartedAt = 0;
+    return false;
+  }
+
+  state.gesture.lastDistance = null;
+  state.gesture.lastMiddleTip = null;
+  state.gesture.primedAt = 0;
+
+  if (!state.gesture.fiveFoldStartedAt) {
+    state.gesture.fiveFoldStartedAt = now;
+  }
+
+  if (state.lines.length >= 6) {
+    setGestureStatus(
+      ui("六爻已成。張開手或按重來後，可以再五指合攏起新卦。", "The six lines are complete. Open your hand or reset before using the five-finger cast again."),
+      ui("已成卦", "Complete")
+    );
+    return true;
+  }
+
+  if (!cleanInput(els.question.value, 180)) {
+    state.gesture.fiveFoldStartedAt = 0;
+    setGestureStatus(
+      ui("請先寫下你的問題，再五指合攏一手成卦。", "Write your question first, then close five fingers to cast the full hexagram."),
+      ui("需要問題", "Question needed")
+    );
+    return true;
+  }
+
+  const heldMs = now - state.gesture.fiveFoldStartedAt;
+  if (heldMs < FIVE_FINGER_CAST_HOLD_MS) {
+    setGestureStatus(
+      ui("五指已合攏。保持一瞬，即可一手出六爻；命運皆掌控在你手。", "Five fingers closed. Hold for a moment to cast all six lines; destiny remains in your hands."),
+      ui("五指合攏", "Five fingers")
+    );
+    return true;
+  }
+
+  const cooldownPassed = (!state.gesture.lastFullCastAt || now - state.gesture.lastFullCastAt > FIVE_FINGER_CAST_COOLDOWN_MS)
+    && (!state.gesture.lastTriggerAt || now - state.gesture.lastTriggerAt > SNAP_COOLDOWN_MS);
+  if (!cooldownPassed) return true;
+
+  state.gesture.lastFullCastAt = now;
+  state.gesture.lastTriggerAt = now;
+  state.gesture.fiveFoldStartedAt = 0;
+  const completed = triggerFullHandCast();
+  if (completed) {
+    els.cameraFrame.classList.add("is-triggered");
+    window.setTimeout(() => els.cameraFrame.classList.remove("is-triggered"), 520);
+  }
+  return true;
+}
+
 function analyzeSnapGesture(landmarks, now) {
   const thumbTip = landmarks[4];
   const middleTip = landmarks[12];
-  const wrist = landmarks[0];
-  const middleMcp = landmarks[9];
-  const indexMcp = landmarks[5];
-  const pinkyMcp = landmarks[17];
-  const palmScale = Math.max(distance2d(wrist, middleMcp), distance2d(indexMcp, pinkyMcp), 0.05);
+  const palmScale = getPalmScale(landmarks);
   const pinchDistance = distance2d(thumbTip, middleTip) / palmScale;
   const frameMs = Math.max(now - (state.gesture.lastFrameAt || now), 16);
   const middleSpeed = state.gesture.lastMiddleTip
@@ -992,6 +1063,62 @@ function triggerGestureCast(source = "vision") {
   }
 }
 
+function triggerFullHandCast() {
+  if (state.lines.length >= 6) {
+    setGestureStatus(
+      ui("六爻已成。按重來後可以再五指合攏起新卦。", "The six lines are complete. Reset before using the five-finger cast again."),
+      ui("已成卦", "Complete")
+    );
+    return false;
+  }
+
+  const before = state.lines.length;
+  while (state.lines.length < 6) {
+    if (!castNextLine()) break;
+  }
+  const added = state.lines.length - before;
+  if (!added) {
+    setGestureStatus(
+      ui("請先寫下你的問題，再五指合攏一手成卦。", "Write your question first, then close five fingers to cast the full hexagram."),
+      ui("需要問題", "Question needed")
+    );
+    return false;
+  }
+
+  setGestureStatus(
+    ui(
+      added === 6
+        ? "五指合攏，一手成卦。六爻已出，命運皆掌控在你手。"
+        : `五指合攏，已補齊餘下 ${added} 爻。六爻已出，命運皆掌控在你手。`,
+      added === 6
+        ? "Five fingers closed: the full hexagram is cast. Destiny remains in your hands."
+        : `Five fingers closed: ${added} remaining line(s) completed. Destiny remains in your hands.`
+    ),
+    ui("一手成卦", "Full cast")
+  );
+  showToast(ui("五指合攏，一手出六爻。", "Five-finger full cast completed."));
+  return true;
+}
+
+function getPalmScale(landmarks) {
+  const wrist = landmarks[0];
+  const middleMcp = landmarks[9];
+  const indexMcp = landmarks[5];
+  const pinkyMcp = landmarks[17];
+  return Math.max(distance2d(wrist, middleMcp), distance2d(indexMcp, pinkyMcp), 0.05);
+}
+
+function getTipSpread(landmarks, palmScale) {
+  const tips = FINGER_TIP_INDEXES.map((index) => landmarks[index]).filter(Boolean);
+  let maxDistance = 0;
+  tips.forEach((tip, index) => {
+    tips.slice(index + 1).forEach((otherTip) => {
+      maxDistance = Math.max(maxDistance, distance2d(tip, otherTip));
+    });
+  });
+  return maxDistance / palmScale;
+}
+
 function distance2d(a, b) {
   return Math.hypot(a.x - b.x, a.y - b.y);
 }
@@ -1033,10 +1160,16 @@ function drawGestureOverlay(landmarks) {
   ctx.fillStyle = "rgba(123, 181, 155, 0.9)";
   drawHandLine(ctx, landmarks, width, height, [0, 5, 9, 13, 17, 0]);
   drawHandLine(ctx, landmarks, width, height, [4, 3, 2, 1, 0]);
+  drawHandLine(ctx, landmarks, width, height, [8, 7, 6, 5]);
   drawHandLine(ctx, landmarks, width, height, [12, 11, 10, 9]);
+  drawHandLine(ctx, landmarks, width, height, [16, 15, 14, 13]);
+  drawHandLine(ctx, landmarks, width, height, [20, 19, 18, 17]);
   ctx.strokeStyle = "rgba(255, 255, 255, 0.78)";
   drawHandLine(ctx, landmarks, width, height, [4, 12]);
-  [4, 12].forEach((index) => {
+  if (state.gesture.lastTipSpread !== null && state.gesture.lastTipSpread <= FIVE_FINGER_CAST_SPREAD) {
+    drawHandLine(ctx, landmarks, width, height, [4, 8, 12, 16, 20, 4]);
+  }
+  FINGER_TIP_INDEXES.forEach((index) => {
     const point = landmarks[index];
     ctx.beginPath();
     ctx.arc(point.x * width, point.y * height, 8, 0, Math.PI * 2);
@@ -1308,7 +1441,7 @@ function resetReading() {
   renderCoins(null);
   renderAll();
   if (state.gesture.active) {
-    setGestureStatus(ui("已重來。打響指會擲初爻。", "Reset complete. Snap to cast the first line."), ui("等待手勢/聲音", "Waiting"));
+    setGestureStatus(ui("已重來。打響指逐爻擲卦；五指合攏可一手成卦。", "Reset complete. Snap line by line, or close five fingers for a full cast."), ui("等待手勢/聲音", "Waiting"));
   } else if (!state.gesture.loading) {
     setGestureStatus(GESTURE_IDLE_STATUS, ui("相機未啟動", "Camera off"));
   }
@@ -1326,9 +1459,9 @@ function castNextLine() {
   if (!question) {
     showToast(ui("請先寫下你的問題，起卦會更清晰。", "Write your question first so the reading has a clear focus."));
     els.question.focus();
-    return;
+    return false;
   }
-  if (state.lines.length >= 6) return;
+  if (state.lines.length >= 6) return false;
   const result = tossCoins();
   state.lines.push(result.total);
   state.coinsByLine.push(result.coins);
@@ -1344,6 +1477,7 @@ function castNextLine() {
     renderAll();
     showToast(ui("六爻已成，AI Prompt 已準備好。", "The six lines are complete. Your AI prompt is ready."));
   }
+  return true;
 }
 
 async function copyPrompt() {

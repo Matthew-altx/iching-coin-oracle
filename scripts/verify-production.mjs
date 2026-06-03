@@ -84,6 +84,13 @@ const checks = {
     && app.text.includes("UI_LANG")
     && app.text.includes("Please answer in English")
     && app.text.includes("Pro advanced requirements"),
+  hasFiveFingerFullCast: homepage.text.includes("五指合攏一手成卦")
+    && homepage.text.includes("命運皆掌控在你手")
+    && englishPage.text.includes("Close Five Fingers for a Full Cast")
+    && englishPage.text.includes("destiny remains in your hands")
+    && app.text.includes("FIVE_FINGER_CAST_HOLD_MS")
+    && app.text.includes("triggerFullHandCast")
+    && app.text.includes("一手出六爻"),
   hasPrepEntry: homepage.text.includes('id="prepare"')
     && homepage.text.includes("靜心")
     && homepage.text.includes("開始占卜")
