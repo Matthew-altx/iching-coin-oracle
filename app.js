@@ -247,6 +247,12 @@ const els = {
   promptOutput: document.querySelector("#promptOutput"),
   proPreview: document.querySelector("#proPreview"),
   proPromptOutput: document.querySelector("#proPromptOutput"),
+  resultCopyButton: document.querySelector("#resultCopyButton"),
+  resultProCheckout: document.querySelector("#resultProCheckout"),
+  resultWhatsAppConsult: document.querySelector("#resultWhatsAppConsult"),
+  resultBarProCheckout: document.querySelector("#resultBarProCheckout"),
+  resultBarDeliveryWhatsApp: document.querySelector("#resultBarDeliveryWhatsApp"),
+  resultBarConsult: document.querySelector("#resultBarConsult"),
   checkoutLink: document.querySelector("#checkoutLink"),
   fulfillmentCheckout: document.querySelector("#fulfillmentCheckout"),
   checkoutNote: document.querySelector("#checkoutNote"),
@@ -512,9 +518,11 @@ function renderMonetizationLinks(reading = getReading()) {
   const quickConsultUrl = getWhatsAppUrl(reading, { intent: "quick" });
   const deepConsultUrl = getWhatsAppUrl(reading, { intent: "deep" });
   const checkoutText = MONETIZATION.checkoutUrl
-    ? ui(`${MONETIZATION.proPrice} 解鎖 Pro Prompt`, `Unlock Pro Prompt · ${MONETIZATION.proPrice}`)
+    ? reading
+      ? ui(`已起卦，${MONETIZATION.proPrice} 解鎖白話 Pro Prompt`, `Cast complete: unlock plain Pro Prompt · ${MONETIZATION.proPrice}`)
+      : ui(`${MONETIZATION.proPrice} 解鎖白話 Pro Prompt`, `Unlock plain Pro Prompt · ${MONETIZATION.proPrice}`)
     : ui("WhatsApp 取得付款連結", "Get payment link on WhatsApp");
-  [els.checkoutLink, els.commissionCheckout, els.fulfillmentCheckout, els.tierProCheckout].forEach((link) => {
+  [els.checkoutLink, els.commissionCheckout, els.fulfillmentCheckout, els.tierProCheckout, els.resultProCheckout, els.resultBarProCheckout].forEach((link) => {
     if (!link) return;
     link.href = paymentUrl;
     link.textContent = checkoutText;
@@ -524,6 +532,15 @@ function renderMonetizationLinks(reading = getReading()) {
   }
   if (els.deliveryWhatsApp) {
     els.deliveryWhatsApp.href = deliveryUrl;
+  }
+  if (els.resultBarDeliveryWhatsApp) {
+    els.resultBarDeliveryWhatsApp.href = deliveryUrl;
+  }
+  if (els.resultWhatsAppConsult) {
+    els.resultWhatsAppConsult.href = quickConsultUrl;
+  }
+  if (els.resultBarConsult) {
+    els.resultBarConsult.href = consultUrl;
   }
   if (els.tierQuickConsult) {
     els.tierQuickConsult.href = quickConsultUrl;
@@ -1685,6 +1702,7 @@ els.sampleQuestion.addEventListener("click", () => {
 els.castButton.addEventListener("click", castNextLine);
 els.resetButton.addEventListener("click", resetReading);
 els.copyButton.addEventListener("click", copyPrompt);
+els.resultCopyButton?.addEventListener("click", copyPrompt);
 els.copyProButton?.addEventListener("click", copyProPrompt);
 els.applyUnlock?.addEventListener("click", () => {
   void applyProUnlock();

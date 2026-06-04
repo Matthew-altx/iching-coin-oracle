@@ -253,6 +253,26 @@
           <p class="system-label">Generated Prompt</p>
           <h2>免費 prompt、Pro prompt、分享圖卡</h2>
         </div>
+        <div class="conversion-path" aria-label="完成起卦後可以怎樣做">
+          <article>
+            <span>1 · Free</span>
+            <strong>免費複製 Prompt</strong>
+            <p>先把白話 Free Prompt 貼去外部 AI，看清大方向。</p>
+            <button class="ghost-button" id="resultCopyButton" type="button">免費複製 Prompt</button>
+          </article>
+          <article class="is-paid">
+            <span>2 · Pro HK$28</span>
+            <strong>解鎖白話 Pro Prompt</strong>
+            <p>多一層白話拆局：下一步清單、容易看錯的地方、3 條追問、80 字摘要。</p>
+            <a class="primary-link" id="resultProCheckout" href="#" target="_blank" rel="noreferrer">HK$28 解鎖白話 Pro Prompt</a>
+          </article>
+          <article>
+            <span>3 · Human</span>
+            <strong>WhatsApp 真人簡批</strong>
+            <p>想有人幫你整理背景和卦象，可以把結果發到 WhatsApp。</p>
+            <a class="ghost-link" id="resultWhatsAppConsult" href="#" target="_blank" rel="noreferrer">WhatsApp 真人簡批</a>
+          </article>
+        </div>
         <div class="prompt-layout">
           <article class="prompt-card">
             <div class="mini-heading">
@@ -285,6 +305,13 @@
             <div class="pro-preview" id="proPreview">
               已準備：白話拆局、3 條追問、下一步清單、容易看錯的地方、可複製完整 prompt。
             </div>
+            <div class="prompt-delivery-strip" aria-label="Pro Prompt 付款後交付流程">
+              <strong>付款後點拎？</strong>
+              <span>Stripe 付款</span>
+              <span>WhatsApp 發收據</span>
+              <span>收解鎖碼</span>
+              <span>複製 Pro Prompt</span>
+            </div>
             <textarea id="proPromptOutput" readonly hidden></textarea>
             <div class="unlock-row">
               <input id="unlockCode" type="text" inputmode="latin" placeholder="輸入解鎖碼" />
@@ -308,6 +335,17 @@
               <button class="ghost-button" id="downloadShareCard" type="button">下載 PNG</button>
             </div>
           </article>
+        </div>
+        <div class="result-cta-bar" aria-label="完成起卦後付款與委託行動">
+          <div>
+            <span>六爻已成</span>
+            <strong>想要更白話、更完整的拆局？</strong>
+          </div>
+          <div class="result-cta-actions">
+            <a class="primary-link" id="resultBarProCheckout" href="#" target="_blank" rel="noreferrer">解鎖 Pro</a>
+            <a class="ghost-link" id="resultBarDeliveryWhatsApp" href="#" target="_blank" rel="noreferrer">WhatsApp 領碼</a>
+            <a class="ghost-link" id="resultBarConsult" href="#" target="_blank" rel="noreferrer">WhatsApp 委託</a>
+          </div>
         </div>
       </section>
 

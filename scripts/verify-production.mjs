@@ -111,6 +111,28 @@ const checks = {
   hasProPromptSurface: homepage.text.includes("proPromptOutput"),
   hasPromptPack: homepage.text.includes("promptPack"),
   hasShareCanvas: homepage.text.includes("shareCanvas"),
+  hasConversionPath: homepage.text.includes("免費複製 Prompt")
+    && homepage.text.includes("HK$28 解鎖白話 Pro Prompt")
+    && homepage.text.includes("WhatsApp 真人簡批")
+    && englishPage.text.includes("Copy the Free Prompt")
+    && englishPage.text.includes("Unlock the Plain Pro Prompt")
+    && englishPage.text.includes("WhatsApp Human Quick Reading"),
+  hasResultCtaBar: homepage.text.includes("resultBarProCheckout")
+    && homepage.text.includes("resultBarDeliveryWhatsApp")
+    && homepage.text.includes("resultBarConsult")
+    && englishPage.text.includes("Cast complete")
+    && englishPage.text.includes("WhatsApp for Code"),
+  hasPromptDeliveryStrip: homepage.text.includes("付款後點拎？")
+    && homepage.text.includes("WhatsApp 發收據")
+    && homepage.text.includes("收解鎖碼")
+    && englishPage.text.includes("Send receipt on WhatsApp")
+    && englishPage.text.includes("Receive unlock code"),
+  appRendersConversionLinks: app.ok
+    && app.text.includes("resultCopyButton")
+    && app.text.includes("resultProCheckout")
+    && app.text.includes("resultBarDeliveryWhatsApp")
+    && app.text.includes("已起卦，")
+    && app.text.includes("Cast complete: unlock plain Pro Prompt"),
   hasPromptClosingCall: app.ok
     && app.text.includes("卦示機緣，人行方成。多行善事，自得善果。未來所有命運仍掌握在你的手上。")
     && hexagram64.text.includes("卦示機緣，人行方成。多行善事，自得善果。未來所有命運仍掌握在你的手上。"),
