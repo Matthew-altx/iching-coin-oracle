@@ -131,6 +131,44 @@ const promptPacks = {
   },
 };
 
+const promptStyleMeta = {
+  neutral: {
+    label: ui("中立直解", "Neutral reading"),
+    summary: ui(
+      "中立、直接，不恐嚇也不亂安慰。",
+      "Neutral and direct, without fear or empty comfort."
+    ),
+  },
+  healer: {
+    label: ui("療癒師語氣", "Healer tone"),
+    summary: ui(
+      "先令人放鬆和被理解，再用很溫柔但實際的說法講清局勢。",
+      "Starts with calm and care, then explains the situation gently and practically."
+    ),
+  },
+  sarcastic: {
+    label: ui("嘲諷模式", "Sarcastic mode"),
+    summary: ui(
+      "用少少寸嘴和幽默提醒你別自欺，但不羞辱、不恐嚇，最後仍要給清楚下一步。",
+      "Uses light sarcasm to challenge self-deception, without humiliation or fear, then gives clear next steps."
+    ),
+  },
+  advisor: {
+    label: ui("顧問式分析", "Consultant analysis"),
+    summary: ui(
+      "先拆局勢，再講風險、資源、時間點和可執行選項。",
+      "Breaks down the situation first, then risks, resources, timing and executable options."
+    ),
+  },
+  action: {
+    label: ui("行動建議優先", "Action-first advice"),
+    summary: ui(
+      "少講玄理，多講可以做、暫緩、避免和觀察的行動。",
+      "Less theory, more practical actions to do, pause, avoid and watch."
+    ),
+  },
+};
+
 const trigramOrder = ["111", "110", "101", "100", "011", "010", "001", "000"];
 const trigramMeta = {
   "111": { name: "乾", nature: "天", quality: "剛健、創始、主導" },
@@ -242,6 +280,9 @@ const els = {
   changedMeta: document.querySelector("#changedMeta"),
   movingLines: document.querySelector("#movingLines"),
   promptStyle: document.querySelector("#promptStyle"),
+  promptStyleNote: document.querySelector("#promptStyleNote"),
+  promptToneBadge: document.querySelector("#promptToneBadge"),
+  promptToneSummary: document.querySelector("#promptToneSummary"),
   promptPack: document.querySelector("#promptPack"),
   promptSection: document.querySelector("#promptSection"),
   promptOutput: document.querySelector("#promptOutput"),
@@ -484,26 +525,49 @@ function renderResult() {
   updatePromptOutputs(reading);
 }
 
+function getPromptStyleMeta() {
+  const style = els.promptStyle?.value || "neutral";
+  return promptStyleMeta[style] || promptStyleMeta.neutral;
+}
+
+function renderPromptStyleSummary() {
+  const meta = getPromptStyleMeta();
+  if (els.promptStyleNote) {
+    els.promptStyleNote.textContent = meta.summary;
+  }
+  if (els.promptToneBadge) {
+    els.promptToneBadge.textContent = meta.label;
+  }
+  if (els.promptToneSummary) {
+    els.promptToneSummary.textContent = ui(
+      `${meta.summary} 複製前可先切換模式，內容會即時更新。`,
+      `${meta.summary} Change the mode before copying and the prompt updates immediately.`
+    );
+  }
+}
+
 function updatePromptOutputs(reading = getReading()) {
   if (!reading) return;
+  renderPromptStyleSummary();
   const freePrompt = buildPrompt(reading, { mode: "free" });
   const proPrompt = buildPrompt(reading, { mode: "pro" });
   els.promptOutput.value = freePrompt;
+  const promptMeta = getPromptStyleMeta();
 
   if (state.proUnlocked) {
     els.proPromptOutput.hidden = false;
     els.proPromptOutput.value = proPrompt;
     els.proPreview.textContent = ui(
-      "Pro Prompt 已解鎖，可以直接複製完整版本。",
-      "Pro Prompt unlocked. You can copy the full version."
+      `Pro Prompt 已解鎖，現正使用「${promptMeta.label}」，可以直接複製完整版本。`,
+      `Pro Prompt unlocked. Current tone: ${promptMeta.label}. You can copy the full version.`
     );
     els.copyProButton.disabled = false;
   } else {
     els.proPromptOutput.hidden = true;
     els.proPromptOutput.value = "";
     els.proPreview.textContent = ui(
-      "已準備：白話拆局、3 條追問、下一步清單、容易看錯的地方、可複製完整 prompt。",
-      "Prepared: plain-language reading, 3 follow-up questions, next-step list, easy-to-misread points and copy-ready prompt."
+      `已準備「${promptMeta.label}」：白話拆局、3 條追問、下一步清單、容易看錯的地方、可複製完整 prompt。`,
+      `Prepared in ${promptMeta.label}: plain-language reading, 3 follow-up questions, next-step list, easy-to-misread points and copy-ready prompt.`
     );
     els.copyProButton.disabled = true;
   }
@@ -1217,12 +1281,20 @@ function buildPrompt(reading, { mode = "free" } = {}) {
     "未填寫問題，請先協助我將卦象作一般性分析。",
     "No question was entered. Please interpret this cast as a general situation reading."
   );
-  const style = els.promptStyle.value;
+  const style = els.promptStyle?.value || "neutral";
   const pack = promptPacks[els.promptPack?.value || "decision"] || promptPacks.decision;
   const styleText = {
     neutral: ui(
       "請以中立、直接、尊重《易經》象義的方式解讀；不要空泛安慰，不要恐嚇，不要把卦意硬套成單一答案。",
       "Read this neutrally, directly and with respect for I Ching symbolism. Avoid vague comfort, fear-based claims or forcing the hexagram into one fixed answer."
+    ),
+    healer: ui(
+      "請以療癒師語氣解讀：先讓人放鬆和感到被理解，再講清局勢。語氣要溫柔、穩定、接地；不要過度安慰，不要叫人逃避現實，也不要把問題包裝成一定會好。",
+      "Use a healer tone: help the reader feel calm and understood before explaining the situation. Be gentle, steady and grounded. Do not over-comfort, encourage avoidance or pretend everything will definitely be fine."
+    ),
+    sarcastic: ui(
+      "請以嘲諷模式解讀：可以用少少寸嘴、幽默和反問提醒我別自欺，但不要羞辱、恐嚇、歧視或攻擊脆弱處。每次講完笑點，都要補回一句清楚、有用、做得到的下一步。",
+      "Use sarcastic mode: use light sarcasm, humor and sharp questions to challenge self-deception, but do not humiliate, threaten, discriminate or attack vulnerable points. After every joke or jab, add one clear, useful and doable next step."
     ),
     advisor: ui(
       "請以顧問式分析：先講局勢，再講風險、資源、時間點和可執行選項；保持中立，不要過度神化。",
@@ -1232,7 +1304,7 @@ function buildPrompt(reading, { mode = "free" } = {}) {
       "請優先輸出行動建議：哪些事應該做、暫緩、避免、觀察；每項建議要扣回卦象與動爻。",
       "Prioritize action advice: what to do, pause, avoid and observe. Every suggestion must connect back to the hexagram and moving lines."
     ),
-  }[style];
+  }[style] || promptStyleMeta.neutral.summary;
 
   const lineRows = state.lines
     .map((value, index) => {
@@ -1516,14 +1588,15 @@ async function copyPrompt() {
   const reading = getReading();
   if (!reading) return;
   const prompt = buildPrompt(reading, { mode: "free" });
+  const tone = getPromptStyleMeta().label;
   els.promptOutput.value = prompt;
   try {
     await navigator.clipboard.writeText(prompt);
-    showToast(ui("已複製 AI Prompt。", "AI Prompt copied."));
+    showToast(ui(`已複製「${tone}」AI Prompt。`, `${tone} AI Prompt copied.`));
   } catch {
     els.promptOutput.select();
     document.execCommand("copy");
-    showToast(ui("已選取並複製 prompt。", "Prompt selected and copied."));
+    showToast(ui(`已選取並複製「${tone}」prompt。`, `${tone} prompt selected and copied.`));
   }
 }
 
@@ -1531,15 +1604,16 @@ async function copyProPrompt() {
   const reading = getReading();
   if (!reading || !state.proUnlocked) return;
   const prompt = buildPrompt(reading, { mode: "pro" });
+  const tone = getPromptStyleMeta().label;
   els.proPromptOutput.value = prompt;
   try {
     await navigator.clipboard.writeText(prompt);
-    showToast(ui("已複製 Pro Prompt。", "Pro Prompt copied."));
+    showToast(ui(`已複製「${tone}」Pro Prompt。`, `${tone} Pro Prompt copied.`));
   } catch {
     els.proPromptOutput.hidden = false;
     els.proPromptOutput.select();
     document.execCommand("copy");
-    showToast(ui("已選取並複製 Pro Prompt。", "Pro Prompt selected and copied."));
+    showToast(ui(`已選取並複製「${tone}」Pro Prompt。`, `${tone} Pro Prompt selected and copied.`));
   }
 }
 
@@ -1726,6 +1800,7 @@ els.snapSensitivity?.addEventListener("change", () => {
   }
 });
 els.promptStyle.addEventListener("change", () => {
+  renderPromptStyleSummary();
   if (getReading()) updatePromptOutputs();
 });
 els.promptPack?.addEventListener("change", () => {
@@ -1738,4 +1813,5 @@ els.clearHistory.addEventListener("click", () => {
 });
 
 renderAll();
+renderPromptStyleSummary();
 renderMonetizationLinks();

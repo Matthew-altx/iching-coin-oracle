@@ -110,6 +110,15 @@ const checks = {
     && homepage.text.includes("問法參考"),
   hasProPromptSurface: homepage.text.includes("proPromptOutput"),
   hasPromptPack: homepage.text.includes("promptPack"),
+  hasPromptToneModes: homepage.text.includes("療癒師語氣")
+    && homepage.text.includes("嘲諷模式")
+    && homepage.text.includes("Prompt 會按你選擇的語氣輸出")
+    && englishPage.text.includes("Healer tone")
+    && englishPage.text.includes("Sarcastic mode")
+    && englishPage.text.includes("The prompt follows your selected tone")
+    && app.text.includes("Use a healer tone")
+    && app.text.includes("Use sarcastic mode")
+    && app.text.includes("renderPromptStyleSummary"),
   hasShareCanvas: homepage.text.includes("shareCanvas"),
   hasConversionPath: homepage.text.includes("免費複製 Prompt")
     && homepage.text.includes("HK$28 解鎖白話 Pro Prompt")

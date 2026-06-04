@@ -225,20 +225,30 @@
             <small>老陰、老陽會成為動爻</small>
           </div>
 
-          <label class="field-label" for="promptStyle">AI Prompt 風格</label>
-          <select id="promptStyle">
-            <option value="neutral">中立直解</option>
-            <option value="advisor">顧問式分析</option>
-            <option value="action">行動建議優先</option>
-          </select>
+          <div class="prompt-tuning-card" aria-label="Prompt 輸出調校">
+            <div class="prompt-tuning-head">
+              <span>Prompt Tuning</span>
+              <strong>選擇 AI 輸出語氣</strong>
+            </div>
 
-          <label class="field-label" for="promptPack">問題場景</label>
-          <select id="promptPack">
-            <option value="decision" selected>決策 / 轉折</option>
-            <option value="relationship">感情 / 關係</option>
-            <option value="career">事業 / 工作</option>
-            <option value="wealth">財務 / 投資</option>
-          </select>
+            <label class="field-label" for="promptStyle">Prompt 語氣模式</label>
+            <select id="promptStyle">
+              <option value="neutral">中立直解</option>
+              <option value="healer">療癒師語氣</option>
+              <option value="sarcastic">嘲諷模式</option>
+              <option value="advisor">顧問式分析</option>
+              <option value="action">行動建議優先</option>
+            </select>
+            <small class="prompt-style-note" id="promptStyleNote">中立、直接，不恐嚇也不亂安慰。</small>
+
+            <label class="field-label" for="promptPack">問題場景</label>
+            <select id="promptPack">
+              <option value="decision" selected>決策 / 轉折</option>
+              <option value="relationship">感情 / 關係</option>
+              <option value="career">事業 / 工作</option>
+              <option value="wealth">財務 / 投資</option>
+            </select>
+          </div>
 
           <div class="ai-links" aria-label="外部 AI 連結">
             <a href="https://chatgpt.com" target="_blank" rel="noreferrer">ChatGPT</a>
@@ -252,6 +262,13 @@
         <div class="section-heading">
           <p class="system-label">Generated Prompt</p>
           <h2>免費 prompt、Pro prompt、分享圖卡</h2>
+        </div>
+        <div class="prompt-mode-summary" aria-live="polite">
+          <span id="promptToneBadge">中立直解</span>
+          <div>
+            <strong>Prompt 會按你選擇的語氣輸出</strong>
+            <p id="promptToneSummary">中立、直接，不恐嚇也不亂安慰。複製前可先切換模式，內容會即時更新。</p>
+          </div>
         </div>
         <div class="conversion-path" aria-label="完成起卦後可以怎樣做">
           <article>

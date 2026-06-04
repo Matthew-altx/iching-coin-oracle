@@ -225,20 +225,30 @@
             <small>Old Yin and Old Yang become moving lines</small>
           </div>
 
-          <label class="field-label" for="promptStyle">AI Prompt Style</label>
-          <select id="promptStyle">
-            <option value="neutral">Neutral reading</option>
-            <option value="advisor">Consultant analysis</option>
-            <option value="action">Action-first advice</option>
-          </select>
+          <div class="prompt-tuning-card" aria-label="Prompt output tuning">
+            <div class="prompt-tuning-head">
+              <span>Prompt Tuning</span>
+              <strong>Choose the AI output tone</strong>
+            </div>
 
-          <label class="field-label" for="promptPack">Question Scenario</label>
-          <select id="promptPack">
-            <option value="decision" selected>Decision / turning point</option>
-            <option value="relationship">Relationship</option>
-            <option value="career">Career / work</option>
-            <option value="wealth">Finance / investing</option>
-          </select>
+            <label class="field-label" for="promptStyle">Prompt Tone Mode</label>
+            <select id="promptStyle">
+              <option value="neutral">Neutral reading</option>
+              <option value="healer">Healer tone</option>
+              <option value="sarcastic">Sarcastic mode</option>
+              <option value="advisor">Consultant analysis</option>
+              <option value="action">Action-first advice</option>
+            </select>
+            <small class="prompt-style-note" id="promptStyleNote">Neutral and direct, without fear or empty comfort.</small>
+
+            <label class="field-label" for="promptPack">Question Scenario</label>
+            <select id="promptPack">
+              <option value="decision" selected>Decision / turning point</option>
+              <option value="relationship">Relationship</option>
+              <option value="career">Career / work</option>
+              <option value="wealth">Finance / investing</option>
+            </select>
+          </div>
 
           <div class="ai-links" aria-label="External AI links">
             <a href="https://chatgpt.com" target="_blank" rel="noreferrer">ChatGPT</a>
@@ -252,6 +262,13 @@
         <div class="section-heading">
           <p class="system-label">Generated Prompt</p>
           <h2>Free prompt, Pro prompt and share card</h2>
+        </div>
+        <div class="prompt-mode-summary" aria-live="polite">
+          <span id="promptToneBadge">Neutral reading</span>
+          <div>
+            <strong>The prompt follows your selected tone</strong>
+            <p id="promptToneSummary">Neutral and direct, without fear or empty comfort. Change the mode before copying and the prompt updates immediately.</p>
+          </div>
         </div>
         <div class="conversion-path" aria-label="What to do after completing the cast">
           <article>
