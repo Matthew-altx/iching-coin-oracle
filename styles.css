@@ -1418,10 +1418,42 @@ select {
 
 #shareCanvas {
   width: 100%;
-  max-width: 320px;
+  max-width: 300px;
   border: 1px solid rgba(231, 209, 156, 0.2);
   border-radius: 8px;
   background: #10130d;
+}
+
+.share-actions,
+.social-share-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.share-actions .primary-button,
+.share-actions .ghost-button {
+  min-height: 42px;
+}
+
+.social-share-links a {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border: 1px solid rgba(123, 181, 155, 0.28);
+  border-radius: 8px;
+  background: rgba(12, 39, 34, 0.28);
+  color: #cbeedd;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.share-note {
+  color: var(--paper-muted);
+  font-size: 12px;
+  line-height: 1.55;
 }
 
 .library-intro {

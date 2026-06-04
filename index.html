@@ -346,11 +346,18 @@
               <span>Share</span>
               <strong>生成分享圖卡</strong>
             </div>
-            <canvas id="shareCanvas" width="1080" height="1350" aria-label="卦象分享圖卡"></canvas>
-            <div class="pro-actions">
+            <canvas id="shareCanvas" width="1080" height="1920" aria-label="卦象 JPG 分享圖卡"></canvas>
+            <div class="share-actions">
               <button class="ghost-button" id="generateShareCard" type="button">更新圖卡</button>
-              <button class="ghost-button" id="downloadShareCard" type="button">下載 PNG</button>
+              <button class="primary-button" id="shareJpgCard" type="button">分享 JPG</button>
+              <button class="ghost-button" id="downloadShareCard" type="button">下載 JPG</button>
             </div>
+            <div class="social-share-links" aria-label="社交平台分享連結">
+              <a id="shareInstagramStory" href="https://www.instagram.com/" target="_blank" rel="noreferrer">IG Story</a>
+              <a id="shareThreads" href="https://www.threads.com/" target="_blank" rel="noreferrer">Threads</a>
+              <a id="shareFacebook" href="https://www.facebook.com/" target="_blank" rel="noreferrer">Facebook</a>
+            </div>
+            <small class="share-note">IG Story：先下載 JPG 再上載；手機可先按「分享 JPG」叫出系統分享表。</small>
           </article>
         </div>
         <div class="result-cta-bar" aria-label="完成起卦後付款與委託行動">

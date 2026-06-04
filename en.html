@@ -346,11 +346,18 @@
               <span>Share</span>
               <strong>Generate a share card</strong>
             </div>
-            <canvas id="shareCanvas" width="1080" height="1350" aria-label="Hexagram share card"></canvas>
-            <div class="pro-actions">
+            <canvas id="shareCanvas" width="1080" height="1920" aria-label="Hexagram JPG share card"></canvas>
+            <div class="share-actions">
               <button class="ghost-button" id="generateShareCard" type="button">Update card</button>
-              <button class="ghost-button" id="downloadShareCard" type="button">Download PNG</button>
+              <button class="primary-button" id="shareJpgCard" type="button">Share JPG</button>
+              <button class="ghost-button" id="downloadShareCard" type="button">Download JPG</button>
             </div>
+            <div class="social-share-links" aria-label="Social media share links">
+              <a id="shareInstagramStory" href="https://www.instagram.com/" target="_blank" rel="noreferrer">IG Story</a>
+              <a id="shareThreads" href="https://www.threads.com/" target="_blank" rel="noreferrer">Threads</a>
+              <a id="shareFacebook" href="https://www.facebook.com/" target="_blank" rel="noreferrer">Facebook</a>
+            </div>
+            <small class="share-note">IG Story: download the JPG first, then upload it. On mobile, use Share JPG to open the system share sheet.</small>
           </article>
         </div>
         <div class="result-cta-bar" aria-label="Payment and consultation actions after completing the cast">

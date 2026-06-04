@@ -119,7 +119,14 @@ const checks = {
     && app.text.includes("Use a healer tone")
     && app.text.includes("Use sarcastic mode")
     && app.text.includes("renderPromptStyleSummary"),
-  hasShareCanvas: homepage.text.includes("shareCanvas"),
+  hasShareCanvas: homepage.text.includes('canvas id="shareCanvas" width="1080" height="1920"')
+    && homepage.text.includes("分享 JPG")
+    && homepage.text.includes("下載 JPG")
+    && homepage.text.includes("shareInstagramStory")
+    && homepage.text.includes("shareThreads")
+    && homepage.text.includes("shareFacebook")
+    && englishPage.text.includes("Share JPG")
+    && englishPage.text.includes("Download JPG"),
   hasConversionPath: homepage.text.includes("免費複製 Prompt")
     && homepage.text.includes("HK$28 解鎖白話 Pro Prompt")
     && homepage.text.includes("WhatsApp 真人簡批")
@@ -142,6 +149,12 @@ const checks = {
     && app.text.includes("resultBarDeliveryWhatsApp")
     && app.text.includes("已起卦，")
     && app.text.includes("Cast complete: unlock plain Pro Prompt"),
+  appRendersJpgShare: app.ok
+    && app.text.includes("image/jpeg")
+    && app.text.includes("shareJpgCard")
+    && app.text.includes("threads.com/intent/post")
+    && app.text.includes("facebook.com/sharer/sharer.php")
+    && app.text.includes("getShareCardJpegBlob"),
   hasPromptClosingCall: app.ok
     && app.text.includes("卦示機緣，人行方成。多行善事，自得善果。未來所有命運仍掌握在你的手上。")
     && hexagram64.text.includes("卦示機緣，人行方成。多行善事，自得善果。未來所有命運仍掌握在你的手上。"),

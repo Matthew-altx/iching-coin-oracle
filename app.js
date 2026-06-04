@@ -308,7 +308,11 @@ const els = {
   deliveryWhatsApp: document.querySelector("#deliveryWhatsApp"),
   shareCanvas: document.querySelector("#shareCanvas"),
   generateShareCard: document.querySelector("#generateShareCard"),
+  shareJpgCard: document.querySelector("#shareJpgCard"),
   downloadShareCard: document.querySelector("#downloadShareCard"),
+  shareInstagramStory: document.querySelector("#shareInstagramStory"),
+  shareThreads: document.querySelector("#shareThreads"),
+  shareFacebook: document.querySelector("#shareFacebook"),
   historyList: document.querySelector("#historyList"),
   clearHistory: document.querySelector("#clearHistory"),
   toast: document.querySelector("#toast"),
@@ -573,6 +577,7 @@ function updatePromptOutputs(reading = getReading()) {
   }
   renderMonetizationLinks(reading);
   drawShareCard(reading);
+  updateSocialShareLinks(reading);
 }
 
 function renderMonetizationLinks(reading = getReading()) {
@@ -1651,14 +1656,16 @@ async function sha256Hex(value) {
 }
 
 function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 4) {
-  const chars = String(text).split("");
+  const source = String(text).trim();
+  const hasSpaces = /\s/.test(source);
+  const chars = hasSpaces ? source.split(/(\s+)/).filter(Boolean) : source.split("");
   const lines = [];
   let line = "";
-  chars.forEach((char) => {
-    const test = line + char;
+  chars.forEach((chunk) => {
+    const test = line + chunk;
     if (ctx.measureText(test).width > maxWidth && line) {
       lines.push(line);
-      line = char;
+      line = chunk.trimStart();
     } else {
       line = test;
     }
@@ -1669,6 +1676,63 @@ function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines = 4) {
     ctx.fillText(row + suffix, x, y + index * lineHeight);
   });
   return Math.min(lines.length, maxLines) * lineHeight;
+}
+
+function drawCanvasInfoBox(ctx, { x, y, width, label, value }) {
+  ctx.save();
+  ctx.fillStyle = "rgba(7, 18, 14, 0.48)";
+  ctx.strokeStyle = "rgba(241, 207, 117, 0.2)";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(x, y, width, 142, 16);
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = "rgba(241, 207, 117, 0.92)";
+  ctx.font = "800 25px Inter, sans-serif";
+  ctx.fillText(label, x + 26, y + 42);
+  ctx.fillStyle = "#f6eddb";
+  ctx.font = "700 34px 'Noto Serif TC', serif";
+  wrapCanvasText(ctx, value, x + 26, y + 88, width - 52, 40, 2);
+  ctx.restore();
+}
+
+function getShareCardTitle(reading) {
+  return IS_EN
+    ? `I Ching Coin Oracle · Hexagram ${reading.primary.number} ${reading.primary.name}`
+    : `六爻銅錢占筮 · 第 ${reading.primary.number} 卦《${reading.primary.name}》`;
+}
+
+function getCanonicalShareUrl() {
+  return new URL(IS_EN ? "/en.html" : "/", location.origin).href;
+}
+
+function getShareText(reading) {
+  const changed = reading.moving.length
+    ? ui(`變卦：第 ${reading.changed.number} 卦《${reading.changed.name}》`, `Changed: Hexagram ${reading.changed.number} ${reading.changed.name}`)
+    : ui("無變卦", "No changed hexagram");
+  return ui(
+    `我剛用六爻銅錢起了一卦：第 ${reading.primary.number} 卦《${reading.primary.name}》。${changed}。卦示機緣，人行方成。`,
+    `I just cast Hexagram ${reading.primary.number} ${reading.primary.name} with the three-coin method. ${changed}. The reading is a reminder; action is still mine.`
+  );
+}
+
+function getShareCardFilename(reading) {
+  return `iching-${reading.primary.number}-${reading.primary.name}.jpg`;
+}
+
+function updateSocialShareLinks(reading = getReading()) {
+  if (!reading) return;
+  const shareUrl = getCanonicalShareUrl();
+  const shareText = getShareText(reading);
+  if (els.shareInstagramStory) {
+    els.shareInstagramStory.href = "https://www.instagram.com/";
+  }
+  if (els.shareThreads) {
+    els.shareThreads.href = `https://www.threads.com/intent/post?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`;
+  }
+  if (els.shareFacebook) {
+    els.shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+  }
 }
 
 function drawShareCard(reading = getReading()) {
@@ -1692,64 +1756,112 @@ function drawShareCard(reading = getReading()) {
   ctx.font = "700 34px Inter, sans-serif";
   ctx.fillText("I CHING COIN ORACLE", 92, 130);
   ctx.fillStyle = "#f6eddb";
-  ctx.font = "800 72px 'Noto Serif TC', serif";
-  ctx.fillText(IS_EN ? `Hexagram ${reading.primary.number}` : `第 ${reading.primary.number} 卦`, 92, 235);
-  ctx.font = "800 96px 'Noto Serif TC', serif";
-  ctx.fillText(reading.primary.name, 92, 340);
+  ctx.font = "800 74px 'Noto Serif TC', serif";
+  ctx.fillText(IS_EN ? `Hexagram ${reading.primary.number}` : `第 ${reading.primary.number} 卦`, 92, 250);
+  ctx.font = "800 102px 'Noto Serif TC', serif";
+  wrapCanvasText(ctx, reading.primary.name, 92, 370, width - 184, 108, 2);
 
   ctx.fillStyle = "rgba(246, 237, 219, 0.8)";
   ctx.font = "600 36px 'Noto Serif TC', serif";
   const question = cleanInput(els.question.value, 180) || ui("未填寫問題", "No question entered");
-  wrapCanvasText(ctx, ui(`問：${question}`, `Question: ${question}`), 92, 430, width - 184, 54, 4);
+  wrapCanvasText(ctx, ui(`問：${question}`, `Question: ${question}`), 92, 530, width - 184, 52, 4);
 
-  ctx.fillStyle = "rgba(241, 207, 117, 0.9)";
-  ctx.font = "700 34px Inter, sans-serif";
-  ctx.fillText(
-    ui(
-      `變卦：${reading.moving.length ? `第 ${reading.changed.number} 卦《${reading.changed.name}》` : "無變卦"}`,
-      `Changed: ${reading.moving.length ? `Hexagram ${reading.changed.number} ${reading.changed.name}` : "none"}`
-    ),
-    92,
-    700
-  );
-  ctx.fillText(
-    ui(
-      `動爻：${reading.moving.length ? joinText(reading.moving.map((line) => lineLabels[line - 1])) : "無"}`,
-      `Moving: ${reading.moving.length ? joinText(reading.moving.map((line) => lineLabels[line - 1])) : "none"}`
-    ),
-    92,
-    760
-  );
+  const changedValue = reading.moving.length
+    ? ui(`第 ${reading.changed.number} 卦《${reading.changed.name}》`, `Hexagram ${reading.changed.number} ${reading.changed.name}`)
+    : ui("無變卦", "None");
+  const movingValue = reading.moving.length
+    ? joinText(reading.moving.map((line) => lineLabels[line - 1]))
+    : ui("無", "None");
+  drawCanvasInfoBox(ctx, {
+    x: 92,
+    y: 760,
+    width: 430,
+    label: ui("變卦", "Changed"),
+    value: changedValue,
+  });
+  drawCanvasInfoBox(ctx, {
+    x: 558,
+    y: 760,
+    width: 430,
+    label: ui("動爻", "Moving lines"),
+    value: movingValue,
+  });
 
   const bits = reading.primary.bits;
   for (let i = 0; i < 6; i += 1) {
-    const y = 900 - i * 56;
+    const y = 1240 - i * 64;
     const isYang = bits[i] === "1";
     ctx.fillStyle = i === 0 || i === 5 ? "#f1cf75" : "#f6eddb";
     if (isYang) {
-      ctx.fillRect(180, y, 720, 22);
+      ctx.fillRect(170, y, 740, 24);
     } else {
-      ctx.fillRect(180, y, 310, 22);
-      ctx.fillRect(590, y, 310, 22);
+      ctx.fillRect(170, y, 315, 24);
+      ctx.fillRect(595, y, 315, 24);
     }
   }
 
+  ctx.fillStyle = "rgba(241, 207, 117, 0.9)";
+  ctx.font = "800 24px Inter, sans-serif";
+  ctx.fillText(ui("三枚銅錢 · 六次成卦 · 貼到 AI 解卦", "Three coins · Six casts · Paste into AI"), 92, 1510);
+  ctx.fillStyle = "rgba(246, 237, 219, 0.86)";
+  ctx.font = "600 32px 'Noto Serif TC', serif";
+  wrapCanvasText(ctx, PROMPT_CLOSING_CALL, 92, 1580, width - 184, 44, 3);
   ctx.fillStyle = "rgba(246, 237, 219, 0.72)";
   ctx.font = "600 30px Inter, sans-serif";
-  ctx.fillText(ui("六次銅錢起卦 · 生成 AI 解卦 Prompt", "Six coin casts · AI reading prompt"), 92, 1180);
+  ctx.fillText(ui("六次銅錢起卦 · 生成 AI 解卦 Prompt", "Six coin casts · AI reading prompt"), 92, 1754);
   ctx.fillStyle = "#8ecab1";
-  ctx.fillText(location.hostname || "iching-coin-oracle.pages.dev", 92, 1230);
+  ctx.fillText(location.hostname || "iching-coin-oracle.pages.dev", 92, 1806);
+  updateSocialShareLinks(reading);
 }
 
-function downloadShareCard() {
+function getShareCardJpegBlob(reading = getReading()) {
+  if (!reading || !els.shareCanvas) return Promise.resolve(null);
+  drawShareCard(reading);
+  return new Promise((resolve) => {
+    els.shareCanvas.toBlob((blob) => resolve(blob), "image/jpeg", 0.92);
+  });
+}
+
+async function downloadShareCard() {
   const reading = getReading();
   if (!reading || !els.shareCanvas) return;
-  drawShareCard(reading);
+  const blob = await getShareCardJpegBlob(reading);
+  if (!blob) return;
   const link = document.createElement("a");
-  link.download = `iching-${reading.primary.number}-${reading.primary.name}.png`;
-  link.href = els.shareCanvas.toDataURL("image/png");
+  link.download = getShareCardFilename(reading);
+  link.href = URL.createObjectURL(blob);
   link.click();
-  showToast(ui("分享圖卡已生成。", "Share card generated."));
+  URL.revokeObjectURL(link.href);
+  showToast(ui("JPG 分享圖卡已下載。", "JPG share card downloaded."));
+}
+
+async function shareJpgCard() {
+  const reading = getReading();
+  if (!reading || !els.shareCanvas) return;
+  const blob = await getShareCardJpegBlob(reading);
+  if (!blob) return;
+  const file = new File([blob], getShareCardFilename(reading), { type: "image/jpeg" });
+  const shareData = {
+    title: getShareCardTitle(reading),
+    text: getShareText(reading),
+    url: getCanonicalShareUrl(),
+  };
+  const fileShareData = { ...shareData, files: [file] };
+  try {
+    if (navigator.canShare?.({ files: [file] }) && navigator.share) {
+      await navigator.share(fileShareData);
+      showToast(ui("已開啟系統分享表。", "System share sheet opened."));
+      return;
+    }
+    if (navigator.share) {
+      await navigator.share(shareData);
+      showToast(ui("此瀏覽器只支援分享連結；JPG 可另行下載。", "This browser shares links only; download the JPG separately."));
+      return;
+    }
+  } catch (error) {
+    if (error?.name === "AbortError") return;
+  }
+  await downloadShareCard();
 }
 
 els.question.addEventListener("input", () => {
@@ -1786,7 +1898,10 @@ els.unlockCode?.addEventListener("keydown", (event) => {
 });
 els.generateShareCard?.addEventListener("click", () => {
   drawShareCard();
-  showToast(ui("分享圖卡已更新。", "Share card updated."));
+  showToast(ui("JPG 分享圖卡已更新。", "JPG share card updated."));
+});
+els.shareJpgCard?.addEventListener("click", () => {
+  void shareJpgCard();
 });
 els.downloadShareCard?.addEventListener("click", downloadShareCard);
 els.startGesture.addEventListener("click", startGestureCamera);
