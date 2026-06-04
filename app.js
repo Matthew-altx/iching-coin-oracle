@@ -279,6 +279,12 @@ const els = {
   changedHex: document.querySelector("#changedHex"),
   changedMeta: document.querySelector("#changedMeta"),
   movingLines: document.querySelector("#movingLines"),
+  resultSharePanel: document.querySelector("#resultSharePanel"),
+  resultShareJpgCard: document.querySelector("#resultShareJpgCard"),
+  resultDownloadShareCard: document.querySelector("#resultDownloadShareCard"),
+  resultShareInstagramStory: document.querySelector("#resultShareInstagramStory"),
+  resultShareThreads: document.querySelector("#resultShareThreads"),
+  resultShareFacebook: document.querySelector("#resultShareFacebook"),
   promptStyle: document.querySelector("#promptStyle"),
   promptStyleNote: document.querySelector("#promptStyleNote"),
   promptToneBadge: document.querySelector("#promptToneBadge"),
@@ -504,6 +510,7 @@ function renderResult() {
     els.movingLines.textContent = ui("未有", "None yet");
     els.copyButton.disabled = true;
     els.promptSection.hidden = true;
+    if (els.resultSharePanel) els.resultSharePanel.hidden = true;
     if (els.copyProButton) els.copyProButton.disabled = true;
     return;
   }
@@ -525,6 +532,7 @@ function renderResult() {
   }
 
   els.copyButton.disabled = false;
+  if (els.resultSharePanel) els.resultSharePanel.hidden = false;
   els.promptSection.hidden = false;
   updatePromptOutputs(reading);
 }
@@ -1727,11 +1735,20 @@ function updateSocialShareLinks(reading = getReading()) {
   if (els.shareInstagramStory) {
     els.shareInstagramStory.href = "https://www.instagram.com/";
   }
+  if (els.resultShareInstagramStory) {
+    els.resultShareInstagramStory.href = "https://www.instagram.com/";
+  }
   if (els.shareThreads) {
     els.shareThreads.href = `https://www.threads.com/intent/post?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`;
   }
+  if (els.resultShareThreads) {
+    els.resultShareThreads.href = `https://www.threads.com/intent/post?text=${encodeURIComponent(`${shareText}\n${shareUrl}`)}`;
+  }
   if (els.shareFacebook) {
     els.shareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+  }
+  if (els.resultShareFacebook) {
+    els.resultShareFacebook.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
   }
 }
 
@@ -1904,6 +1921,10 @@ els.shareJpgCard?.addEventListener("click", () => {
   void shareJpgCard();
 });
 els.downloadShareCard?.addEventListener("click", downloadShareCard);
+els.resultShareJpgCard?.addEventListener("click", () => {
+  void shareJpgCard();
+});
+els.resultDownloadShareCard?.addEventListener("click", downloadShareCard);
 els.startGesture.addEventListener("click", startGestureCamera);
 els.stopGesture.addEventListener("click", stopGestureCamera);
 els.snapSensitivity?.addEventListener("change", () => {

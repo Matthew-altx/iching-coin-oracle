@@ -120,11 +120,16 @@ const checks = {
     && app.text.includes("Use sarcastic mode")
     && app.text.includes("renderPromptStyleSummary"),
   hasShareCanvas: homepage.text.includes('canvas id="shareCanvas" width="1080" height="1920"')
+    && homepage.text.includes("resultSharePanel")
+    && homepage.text.includes("卦象已成，立即分享")
+    && homepage.text.includes("分享卦象 JPG")
     && homepage.text.includes("分享 JPG")
     && homepage.text.includes("下載 JPG")
     && homepage.text.includes("shareInstagramStory")
     && homepage.text.includes("shareThreads")
     && homepage.text.includes("shareFacebook")
+    && englishPage.text.includes("Cast complete. Share it now.")
+    && englishPage.text.includes("Share Hexagram JPG")
     && englishPage.text.includes("Share JPG")
     && englishPage.text.includes("Download JPG"),
   hasConversionPath: homepage.text.includes("免費複製 Prompt")
@@ -152,6 +157,8 @@ const checks = {
   appRendersJpgShare: app.ok
     && app.text.includes("image/jpeg")
     && app.text.includes("shareJpgCard")
+    && app.text.includes("resultShareJpgCard")
+    && app.text.includes("resultSharePanel")
     && app.text.includes("threads.com/intent/post")
     && app.text.includes("facebook.com/sharer/sharer.php")
     && app.text.includes("getShareCardJpegBlob"),

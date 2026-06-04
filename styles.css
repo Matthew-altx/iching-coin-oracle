@@ -1063,6 +1063,54 @@ textarea::placeholder {
   line-height: 1.45;
 }
 
+.result-share-panel {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid rgba(241, 207, 117, 0.42);
+  border-radius: 8px;
+  background:
+    linear-gradient(145deg, rgba(241, 207, 117, 0.14), rgba(123, 181, 155, 0.1)),
+    rgba(7, 6, 4, 0.34);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.18);
+}
+
+.result-share-panel[hidden] {
+  display: none;
+}
+
+.result-share-panel span {
+  color: var(--gold-strong);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.result-share-panel strong {
+  display: block;
+  margin-top: 5px;
+  color: var(--paper);
+  font-family: var(--serif);
+  font-size: 23px;
+  line-height: 1.16;
+}
+
+.result-share-panel p {
+  margin: 6px 0 0;
+  color: var(--paper-muted);
+  font-size: 13px;
+  line-height: 1.58;
+}
+
+.result-share-panel .primary-button {
+  flex: 1 1 160px;
+}
+
+.result-share-panel .ghost-button {
+  flex: 1 1 110px;
+}
+
 .prompt-tuning-card {
   display: grid;
   gap: 10px;
