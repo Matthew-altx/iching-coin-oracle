@@ -153,7 +153,12 @@ const checks = {
   hasResponsibleUse: homepage.text.includes('id="boundaries"')
     && homepage.text.includes("不鼓勵監控或操控他人")
     && homepage.text.includes("不保證結果，只整理方向"),
-  hasTierCtas: homepage.text.includes("HK$188") && homepage.text.includes("HK$1680 起") && homepage.text.includes("找大師父協助") && homepage.text.includes("tierDeepConsult"),
+  hasTierCtas: homepage.text.includes("自己拆、真人批、大師接局")
+    && englishPage.text.includes("DIY, Human Help, Master Guidance")
+    && homepage.text.includes("HK$188")
+    && homepage.text.includes("HK$1680 起")
+    && homepage.text.includes("找大師父協助")
+    && homepage.text.includes("tierDeepConsult"),
   hasMethodFactCheck: homepage.text.includes("字=陰=2，背=陽=3") && homepage.text.includes("上三爻為外卦"),
   hasWhatsAppCta: homepage.text.includes("whatsappConsult"),
   hasSeoLibrary: homepage.text.includes("hexagram-library"),
