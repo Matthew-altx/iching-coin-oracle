@@ -1508,6 +1508,33 @@ select {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.tier-disclaimer {
+  display: grid;
+  gap: 8px;
+  margin: -4px 0 16px;
+  padding: 16px;
+  border: 1px solid rgba(123, 181, 155, 0.28);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(31, 95, 80, 0.23), rgba(241, 207, 117, 0.07)),
+    rgba(7, 6, 4, 0.28);
+}
+
+.tier-disclaimer strong {
+  color: #cbeedd;
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.tier-disclaimer p {
+  max-width: 980px;
+  margin: 0;
+  color: var(--paper-muted);
+  font-size: 15px;
+  line-height: 1.78;
+}
+
 .price-card {
   display: grid;
   align-content: start;

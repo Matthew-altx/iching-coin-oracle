@@ -155,6 +155,10 @@ const checks = {
     && homepage.text.includes("不保證結果，只整理方向"),
   hasTierCtas: homepage.text.includes("自己拆、真人批、大師接局")
     && englishPage.text.includes("DIY, Human Help, Master Guidance")
+    && homepage.text.includes("不鼓勵依賴聲明")
+    && homepage.text.includes("真正掌控命運的，永遠是你自己")
+    && englishPage.text.includes("Agency reminder")
+    && englishPage.text.includes("Your future is still shaped by your own hands")
     && homepage.text.includes("HK$188")
     && homepage.text.includes("HK$1680 起")
     && homepage.text.includes("找大師父協助")
