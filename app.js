@@ -131,6 +131,21 @@ const promptPacks = {
   },
 };
 
+const scenarioEntryExamples = {
+  relationship: ui(
+    "我和對方最近關係卡住，未來三個月應該主動修補、保持距離，還是先看清對方態度？",
+    "This relationship feels stuck. Over the next three months, should I repair it actively, keep distance, or first observe the other person's attitude?"
+  ),
+  career: ui(
+    "我未來三個月應該留在現有工作穩住收入，還是主動爭取新機會和更高收入？",
+    "Over the next three months, should I stay in my current work to stabilize income, or actively pursue new opportunities and higher income?"
+  ),
+  decision: ui(
+    "面對這個重要決定，我現在應該前進、等待、轉方向，還是先停一停補齊資料？",
+    "For this important decision, should I move ahead, wait, change direction, or pause first to gather more facts?"
+  ),
+};
+
 const promptStyleMeta = {
   neutral: {
     label: ui("中立直解", "Neutral reading"),
@@ -266,6 +281,7 @@ const els = {
   question: document.querySelector("#question"),
   questionCount: document.querySelector("#questionCount"),
   sampleQuestion: document.querySelector("#sampleQuestion"),
+  scenarioButtons: Array.from(document.querySelectorAll("[data-scenario-entry]")),
   coinTray: document.querySelector("#coinTray"),
   coins: Array.from(document.querySelectorAll(".coin")),
   castStatus: document.querySelector("#castStatus"),
@@ -706,6 +722,17 @@ function renderAll() {
   renderResult();
   renderControls();
   renderHistory();
+}
+
+function setQuestionDraft(question, { pack = null, focus = true } = {}) {
+  els.question.value = cleanInput(question, 180);
+  if (pack && els.promptPack) {
+    els.promptPack.value = pack;
+  }
+  renderAll();
+  renderPromptStyleSummary();
+  if (getReading()) updatePromptOutputs();
+  if (focus) els.question.focus();
 }
 
 function setGestureStatus(message, badge = null) {
@@ -1728,6 +1755,200 @@ function getShareCardFilename(reading) {
   return `iching-${reading.primary.number}-${reading.primary.name}.jpg`;
 }
 
+function getShareShortLabel() {
+  const url = new URL(getCanonicalShareUrl());
+  return `${url.hostname}${url.pathname === "/" ? "" : url.pathname}`;
+}
+
+function appendQrBits(bits, value, length) {
+  for (let i = length - 1; i >= 0; i -= 1) {
+    bits.push(((value >>> i) & 1) === 1);
+  }
+}
+
+let qrGfTables = null;
+function getQrGfTables() {
+  if (qrGfTables) return qrGfTables;
+  const exp = new Array(512);
+  const log = new Array(256);
+  let value = 1;
+  for (let i = 0; i < 255; i += 1) {
+    exp[i] = value;
+    log[value] = i;
+    value <<= 1;
+    if (value & 0x100) value ^= 0x11d;
+  }
+  for (let i = 255; i < 512; i += 1) {
+    exp[i] = exp[i - 255];
+  }
+  qrGfTables = { exp, log };
+  return qrGfTables;
+}
+
+function qrGfMultiply(left, right) {
+  if (left === 0 || right === 0) return 0;
+  const { exp, log } = getQrGfTables();
+  return exp[log[left] + log[right]];
+}
+
+function getQrReedSolomonDivisor(degree) {
+  const result = new Array(degree).fill(0);
+  result[degree - 1] = 1;
+  let root = 1;
+  for (let i = 0; i < degree; i += 1) {
+    for (let j = 0; j < degree; j += 1) {
+      result[j] = qrGfMultiply(result[j], root);
+      if (j + 1 < degree) result[j] ^= result[j + 1];
+    }
+    root = qrGfMultiply(root, 0x02);
+  }
+  return result;
+}
+
+function getQrReedSolomonRemainder(data, degree) {
+  const divisor = getQrReedSolomonDivisor(degree);
+  const result = new Array(degree).fill(0);
+  data.forEach((byte) => {
+    const factor = byte ^ result.shift();
+    result.push(0);
+    divisor.forEach((coefficient, index) => {
+      result[index] ^= qrGfMultiply(coefficient, factor);
+    });
+  });
+  return result;
+}
+
+function getQrCodewords(text) {
+  const dataCodewords = 80;
+  const errorCodewords = 20;
+  const bytes = Array.from(new TextEncoder().encode(text));
+  if (bytes.length > 78) return null;
+  const bits = [];
+  appendQrBits(bits, 0x4, 4);
+  appendQrBits(bits, bytes.length, 8);
+  bytes.forEach((byte) => appendQrBits(bits, byte, 8));
+  const capacity = dataCodewords * 8;
+  const terminator = Math.min(4, capacity - bits.length);
+  appendQrBits(bits, 0, terminator);
+  while (bits.length % 8 !== 0) bits.push(false);
+
+  const data = [];
+  for (let i = 0; i < bits.length; i += 8) {
+    let byte = 0;
+    for (let j = 0; j < 8; j += 1) {
+      byte = (byte << 1) | (bits[i + j] ? 1 : 0);
+    }
+    data.push(byte);
+  }
+  for (let padIndex = 0; data.length < dataCodewords; padIndex += 1) {
+    data.push(padIndex % 2 === 0 ? 0xec : 0x11);
+  }
+  return data.concat(getQrReedSolomonRemainder(data, errorCodewords));
+}
+
+function createQrMatrix(text) {
+  const size = 33;
+  const matrix = Array.from({ length: size }, () => new Array(size).fill(false));
+  const reserved = Array.from({ length: size }, () => new Array(size).fill(false));
+  const setModule = (x, y, dark, reserve = true) => {
+    if (x < 0 || y < 0 || x >= size || y >= size) return;
+    matrix[y][x] = dark;
+    if (reserve) reserved[y][x] = true;
+  };
+
+  const drawFinder = (left, top) => {
+    for (let dy = -1; dy <= 7; dy += 1) {
+      for (let dx = -1; dx <= 7; dx += 1) {
+        const x = left + dx;
+        const y = top + dy;
+        const dark = dx >= 0 && dx <= 6 && dy >= 0 && dy <= 6
+          && (dx === 0 || dx === 6 || dy === 0 || dy === 6 || (dx >= 2 && dx <= 4 && dy >= 2 && dy <= 4));
+        setModule(x, y, dark);
+      }
+    }
+  };
+
+  drawFinder(0, 0);
+  drawFinder(size - 7, 0);
+  drawFinder(0, size - 7);
+
+  for (let i = 8; i < size - 8; i += 1) {
+    setModule(i, 6, i % 2 === 0);
+    setModule(6, i, i % 2 === 0);
+  }
+
+  for (let dy = -2; dy <= 2; dy += 1) {
+    for (let dx = -2; dx <= 2; dx += 1) {
+      const distance = Math.max(Math.abs(dx), Math.abs(dy));
+      setModule(26 + dx, 26 + dy, distance === 2 || distance === 0);
+    }
+  }
+
+  setModule(8, size - 8, true);
+  for (let i = 0; i <= 8; i += 1) {
+    if (i !== 6) {
+      reserved[8][i] = true;
+      reserved[i][8] = true;
+    }
+  }
+  for (let i = 0; i < 8; i += 1) reserved[8][size - 1 - i] = true;
+  for (let i = 8; i < 15; i += 1) reserved[size - 15 + i][8] = true;
+
+  const codewords = getQrCodewords(text);
+  if (!codewords) return null;
+  const dataBits = [];
+  codewords.forEach((byte) => appendQrBits(dataBits, byte, 8));
+  let bitIndex = 0;
+  let upward = true;
+  for (let right = size - 1; right >= 1; right -= 2) {
+    if (right === 6) right -= 1;
+    for (let vertical = 0; vertical < size; vertical += 1) {
+      const y = upward ? size - 1 - vertical : vertical;
+      for (let offset = 0; offset < 2; offset += 1) {
+        const x = right - offset;
+        if (reserved[y][x]) continue;
+        const masked = (dataBits[bitIndex] || false) !== ((x + y) % 2 === 0);
+        setModule(x, y, masked, false);
+        bitIndex += 1;
+      }
+    }
+    upward = !upward;
+  }
+
+  const formatBits = 0b111011111000100;
+  const setFormatBit = (x, y, index) => setModule(x, y, ((formatBits >>> index) & 1) === 1);
+  for (let i = 0; i <= 5; i += 1) setFormatBit(8, i, i);
+  setFormatBit(8, 7, 6);
+  setFormatBit(8, 8, 7);
+  setFormatBit(7, 8, 8);
+  for (let i = 9; i < 15; i += 1) setFormatBit(14 - i, 8, i);
+  for (let i = 0; i < 8; i += 1) setFormatBit(size - 1 - i, 8, i);
+  for (let i = 8; i < 15; i += 1) setFormatBit(8, size - 15 + i, i);
+  return matrix;
+}
+
+function drawQrCode(ctx, text, x, y, size) {
+  const matrix = createQrMatrix(text);
+  if (!matrix) return;
+  ctx.save();
+  ctx.fillStyle = "#f6eddb";
+  ctx.fillRect(x, y, size, size);
+  const quiet = 12;
+  const moduleSize = Math.floor((size - quiet * 2) / matrix.length);
+  const qrSize = moduleSize * matrix.length;
+  const startX = x + Math.floor((size - qrSize) / 2);
+  const startY = y + Math.floor((size - qrSize) / 2);
+  ctx.fillStyle = "#10130d";
+  matrix.forEach((row, rowIndex) => {
+    row.forEach((dark, columnIndex) => {
+      if (dark) {
+        ctx.fillRect(startX + columnIndex * moduleSize, startY + rowIndex * moduleSize, moduleSize, moduleSize);
+      }
+    });
+  });
+  ctx.restore();
+}
+
 function updateSocialShareLinks(reading = getReading()) {
   if (!reading) return;
   const shareUrl = getCanonicalShareUrl();
@@ -1817,17 +2038,29 @@ function drawShareCard(reading = getReading()) {
     }
   }
 
+  const shareUrl = getCanonicalShareUrl();
+  const shortLabel = getShareShortLabel();
   ctx.fillStyle = "rgba(241, 207, 117, 0.9)";
   ctx.font = "800 24px Inter, sans-serif";
   ctx.fillText(ui("三枚銅錢 · 六次成卦 · 貼到 AI 解卦", "Three coins · Six casts · Paste into AI"), 92, 1510);
   ctx.fillStyle = "rgba(246, 237, 219, 0.86)";
   ctx.font = "600 32px 'Noto Serif TC', serif";
   wrapCanvasText(ctx, PROMPT_CLOSING_CALL, 92, 1580, width - 184, 44, 3);
+  ctx.fillStyle = "rgba(10, 8, 5, 0.34)";
+  ctx.fillRect(82, 1672, 626, 186);
+  ctx.strokeStyle = "rgba(241, 207, 117, 0.22)";
+  ctx.lineWidth = 2;
+  ctx.strokeRect(82, 1672, 626, 186);
   ctx.fillStyle = "rgba(246, 237, 219, 0.72)";
-  ctx.font = "600 30px Inter, sans-serif";
-  ctx.fillText(ui("六次銅錢起卦 · 生成 AI 解卦 Prompt", "Six coin casts · AI reading prompt"), 92, 1754);
+  ctx.font = "800 28px Inter, sans-serif";
+  ctx.fillText(ui("掃碼試起卦", "Scan to try the oracle"), 112, 1724);
   ctx.fillStyle = "#8ecab1";
-  ctx.fillText(location.hostname || "iching-coin-oracle.pages.dev", 92, 1806);
+  ctx.font = "800 29px Inter, sans-serif";
+  wrapCanvasText(ctx, shortLabel || "iching-coin-oracle.pages.dev", 112, 1780, 548, 34, 1);
+  ctx.fillStyle = "rgba(246, 237, 219, 0.72)";
+  ctx.font = "600 28px Inter, sans-serif";
+  ctx.fillText(ui("六次銅錢起卦 · 生成 AI 解卦 Prompt", "Six coin casts · AI reading prompt"), 112, 1826);
+  drawQrCode(ctx, shareUrl, 770, 1668, 176);
   updateSocialShareLinks(reading);
 }
 
@@ -1894,12 +2127,21 @@ els.question.addEventListener("input", () => {
 });
 
 els.sampleQuestion.addEventListener("click", () => {
-  els.question.value = ui(
-    "我今個月應該如何安排工作與財務重點，先穩住現有收入還是主動開拓新機會？",
-    "How should I arrange my work and finances this month: stabilize current income first, or actively explore new opportunities?"
+  setQuestionDraft(
+    ui(
+      "我今個月應該如何安排工作與財務重點，先穩住現有收入還是主動開拓新機會？",
+      "How should I arrange my work and finances this month: stabilize current income first, or actively explore new opportunities?"
+    ),
+    { pack: "career" }
   );
-  renderAll();
-  els.question.focus();
+});
+
+els.scenarioButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const pack = button.dataset.scenarioEntry || "decision";
+    setQuestionDraft(scenarioEntryExamples[pack] || scenarioEntryExamples.decision, { pack });
+    showToast(ui("已填入貼地問法，可按你的情況再改。", "Practical question added. Edit the details for your situation."));
+  });
 });
 
 els.castButton.addEventListener("click", castNextLine);

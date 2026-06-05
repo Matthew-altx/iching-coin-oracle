@@ -61,10 +61,10 @@
             </div>
             <div class="prep-coin-large"><span>易</span></div>
           </div>
-          <p class="prep-kicker">Six Coins Cast · One Clear Question</p>
+          <p class="prep-kicker">三枚銅錢 · 六次成卦 · 一段 Prompt</p>
           <h1 class="prep-title" id="prepTitle">
-            <span>靜心</span>
-            <span>起卦</span>
+            <span>三枚銅錢</span>
+            <span>六次起卦</span>
           </h1>
           <div class="prep-coin-row" aria-hidden="true">
             <span>字</span>
@@ -72,9 +72,9 @@
             <span>字</span>
           </div>
           <p class="prep-copy">
-            先停一停，想清楚你真正想問的一件事。準備好後，再進入六次銅錢起卦，生成可貼去外部 AI 的易經解卦 prompt。
+            起卦不用記規則，解卦不用自己砌 Prompt。完成六爻後，網站會整理本卦、變卦與動爻，生成可貼去 ChatGPT、Claude 或 Gemini 的白話解卦 Prompt。
           </p>
-          <a class="prep-start" id="startOracle" href="#oracle">開始占卜</a>
+          <a class="prep-start" id="startOracle" href="#oracle">開始起卦</a>
         </div>
       </section>
 
@@ -119,6 +119,15 @@
           <div class="input-footer">
             <span id="questionCount">0 / 180</span>
             <button class="text-button" id="sampleQuestion" type="button">填入示例</button>
+          </div>
+          <div class="scenario-entry" aria-label="快速問題入口">
+            <strong>你想問哪一類事？</strong>
+            <div class="scenario-entry-buttons">
+              <button type="button" data-scenario-entry="relationship">問感情</button>
+              <button type="button" data-scenario-entry="career">問事業</button>
+              <button type="button" data-scenario-entry="decision">問決定</button>
+            </div>
+            <small>一按填入貼地問法，再按自己情況改幾隻字。</small>
           </div>
           <div class="question-helper" aria-label="問題寫法提示">
             <strong>問法參考</strong>
@@ -229,7 +238,7 @@
             <div>
               <span>Share Ready</span>
               <strong>卦象已成，立即分享</strong>
-              <p>產生直式 JPG 圖卡，適合放 IG Story、Threads 或 Facebook。</p>
+              <p>產生直式 JPG 圖卡，會帶網站名與 QR code，適合放 IG Story、Threads 或 Facebook。</p>
             </div>
             <div class="share-actions">
               <button class="primary-button" id="resultShareJpgCard" type="button">分享卦象 JPG</button>
@@ -374,7 +383,7 @@
               <a id="shareThreads" href="https://www.threads.com/" target="_blank" rel="noreferrer">Threads</a>
               <a id="shareFacebook" href="https://www.facebook.com/" target="_blank" rel="noreferrer">Facebook</a>
             </div>
-            <small class="share-note">IG Story：先下載 JPG 再上載；手機可先按「分享 JPG」叫出系統分享表。</small>
+            <small class="share-note">圖卡會包含網站名、短網址和 QR code。IG Story：先下載 JPG 再上載；手機可先按「分享 JPG」叫出系統分享表。</small>
           </article>
         </div>
         <div class="result-cta-bar" aria-label="完成起卦後付款與委託行動">

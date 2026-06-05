@@ -100,16 +100,26 @@ const checks = {
     && app.text.includes("triggerFullHandCast")
     && app.text.includes("一手出六爻"),
   hasPrepEntry: homepage.text.includes('id="prepare"')
-    && homepage.text.includes("靜心")
-    && homepage.text.includes("開始占卜")
+    && homepage.text.includes("三枚銅錢 · 六次成卦 · 一段 Prompt")
+    && homepage.text.includes("起卦不用記規則，解卦不用自己砌 Prompt")
+    && homepage.text.includes("開始起卦")
     && homepage.text.includes('href="#oracle"')
     && homepage.text.includes("prep-bagua")
     && homepage.text.includes("prep-coin-row"),
+  noConfusingSixCoinsCopy: !homepage.text.includes("Six Coins Cast")
+    && !englishPage.text.includes("Six Coins Cast"),
   hasQuestionGuide: homepage.text.includes('id="question-guide"')
     && homepage.text.includes("先問準，再起卦")
     && homepage.text.includes("問法參考"),
   hasProPromptSurface: homepage.text.includes("proPromptOutput"),
   hasPromptPack: homepage.text.includes("promptPack"),
+  hasScenarioEntries: homepage.text.includes('data-scenario-entry="relationship"')
+    && homepage.text.includes("問感情")
+    && homepage.text.includes("問事業")
+    && homepage.text.includes("問決定")
+    && englishPage.text.includes('data-scenario-entry="relationship"')
+    && englishPage.text.includes("What are you asking about?")
+    && app.text.includes("scenarioEntryExamples"),
   hasPromptToneModes: homepage.text.includes("療癒師語氣")
     && homepage.text.includes("嘲諷模式")
     && homepage.text.includes("Prompt 會按你選擇的語氣輸出")
@@ -125,13 +135,15 @@ const checks = {
     && homepage.text.includes("分享卦象 JPG")
     && homepage.text.includes("分享 JPG")
     && homepage.text.includes("下載 JPG")
+    && homepage.text.includes("QR code")
     && homepage.text.includes("shareInstagramStory")
     && homepage.text.includes("shareThreads")
     && homepage.text.includes("shareFacebook")
     && englishPage.text.includes("Cast complete. Share it now.")
     && englishPage.text.includes("Share Hexagram JPG")
     && englishPage.text.includes("Share JPG")
-    && englishPage.text.includes("Download JPG"),
+    && englishPage.text.includes("Download JPG")
+    && englishPage.text.includes("QR code"),
   hasConversionPath: homepage.text.includes("免費複製 Prompt")
     && homepage.text.includes("HK$28 解鎖白話 Pro Prompt")
     && homepage.text.includes("WhatsApp 真人簡批")
@@ -159,6 +171,9 @@ const checks = {
     && app.text.includes("shareJpgCard")
     && app.text.includes("resultShareJpgCard")
     && app.text.includes("resultSharePanel")
+    && app.text.includes("createQrMatrix")
+    && app.text.includes("drawQrCode")
+    && app.text.includes("getShareShortLabel")
     && app.text.includes("threads.com/intent/post")
     && app.text.includes("facebook.com/sharer/sharer.php")
     && app.text.includes("getShareCardJpegBlob"),

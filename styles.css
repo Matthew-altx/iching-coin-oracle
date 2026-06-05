@@ -600,6 +600,57 @@ textarea::placeholder {
   font-size: 12px;
 }
 
+.scenario-entry {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid rgba(209, 170, 85, 0.24);
+  border-radius: 8px;
+  background:
+    linear-gradient(135deg, rgba(209, 170, 85, 0.12), rgba(123, 181, 155, 0.08)),
+    rgba(10, 8, 5, 0.32);
+}
+
+.scenario-entry strong {
+  color: var(--gold-strong);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.scenario-entry-buttons {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.scenario-entry button {
+  min-height: 42px;
+  border: 1px solid rgba(247, 219, 140, 0.34);
+  border-radius: 8px;
+  background: rgba(28, 22, 13, 0.72);
+  color: var(--paper);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 900;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.scenario-entry button:hover,
+.scenario-entry button:focus-visible {
+  border-color: rgba(247, 219, 140, 0.78);
+  background: rgba(65, 46, 20, 0.84);
+  outline: none;
+  transform: translateY(-1px);
+}
+
+.scenario-entry small {
+  color: rgba(203, 238, 221, 0.82);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
 .question-helper {
   margin-top: 12px;
   padding: 14px;
@@ -2042,6 +2093,10 @@ select {
 
   .prep-start {
     width: min(100%, 220px);
+  }
+
+  .scenario-entry-buttons {
+    grid-template-columns: 1fr;
   }
 
   .intro-panel,
