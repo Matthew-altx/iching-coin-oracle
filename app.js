@@ -29,6 +29,7 @@ const PRO_UNLOCK_KEY = "iching.coin.pro.v1";
 const DEFAULT_UNLOCK_CODE_HASH = "b9a3416d64a91902032a7ec7f97c9754e56575e20d137c77fdf5aca7bdaa66b6";
 const DEFAULT_MONETIZATION = {
   checkoutUrl: "",
+  checkoutEndpoint: "",
   whatsappNumber: "",
   proPrice: "HK$28",
   consultLabel: "六爻解卦委託",
@@ -644,8 +645,8 @@ function renderMonetizationLinks(reading = getReading()) {
   if (els.checkoutNote) {
     els.checkoutNote.textContent = MONETIZATION.checkoutUrl
       ? ui(
-          "付款後請用 WhatsApp 發送收據，核對後會回覆 Pro 解鎖碼。",
-          "After payment, send your Stripe receipt via WhatsApp. The Pro unlock code will be sent after verification."
+          "付款成功後會回到本網站自動核對並解鎖；如 Stripe 成功頁未能返回，可用 WhatsApp 作後備支援。",
+          "After payment, you return here for automatic verification and unlock. If Stripe cannot redirect back, WhatsApp remains the fallback."
         )
       : ui(
           "暫未填入 Stripe Payment Link；此 MVP 會先用 WhatsApp 承接付款與委託。",
@@ -659,6 +660,54 @@ function getCheckoutUrl(reading = getReading()) {
   return getWhatsAppUrl(reading, { intent: "payment" });
 }
 
+function getCheckoutEndpoint() {
+  return String(MONETIZATION.checkoutEndpoint || "").trim();
+}
+
+function getCheckoutLinks() {
+  return [els.checkoutLink, els.commissionCheckout, els.fulfillmentCheckout, els.tierProCheckout, els.resultProCheckout, els.resultBarProCheckout].filter(Boolean);
+}
+
+function buildCheckoutPayload(reading = getReading()) {
+  return {
+    lang: UI_LANG,
+    question: cleanInput(els.question.value, 180),
+    promptPack: els.promptPack?.value || "decision",
+    promptStyle: els.promptStyle?.value || "neutral",
+    primaryHexagram: reading ? `${reading.primary.number} ${reading.primary.name}` : "",
+    changedHexagram: reading && reading.moving.length ? `${reading.changed.number} ${reading.changed.name}` : "",
+    movingLines: reading?.moving?.length ? reading.moving.join(",") : "",
+    sourcePath: location.pathname,
+  };
+}
+
+async function startStripeCheckout(event) {
+  const endpoint = getCheckoutEndpoint();
+  if (!endpoint) return;
+  event.preventDefault();
+  const link = event.currentTarget;
+  const fallbackUrl = link?.href || getCheckoutUrl();
+  link?.setAttribute("aria-busy", "true");
+  showToast(ui("正在開啟 Stripe 安全付款頁...", "Opening Stripe secure checkout..."));
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(buildCheckoutPayload()),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok || !data.url) {
+      throw new Error(data.error || "checkout_unavailable");
+    }
+    location.assign(data.url);
+  } catch {
+    showToast(ui("自動付款暫時未能開啟，正轉到後備 Stripe Payment Link。", "Automatic checkout is unavailable; opening the fallback Stripe Payment Link."));
+    if (fallbackUrl) location.assign(fallbackUrl);
+  } finally {
+    link?.removeAttribute("aria-busy");
+  }
+}
+
 function getWhatsAppUrl(reading = getReading(), { intent = "consult" } = {}) {
   const question = cleanInput(els.question.value, 180) || ui("我想查詢六爻解卦", "I would like an I Ching six-line reading.");
   const hexText = reading
@@ -668,8 +717,8 @@ function getWhatsAppUrl(reading = getReading(), { intent = "consult" } = {}) {
       )
     : ui("尚未完成起卦", "Casting not completed yet");
   const prefixes = {
-    payment: ui(`我想購買 ${MONETIZATION.proPrice} Pro Prompt 解鎖碼。`, `I would like to buy the ${MONETIZATION.proPrice} Pro Prompt unlock code.`),
-    delivery: ui("我已完成付款，想領取 Pro Prompt 解鎖碼。", "I have completed payment and would like to receive the Pro Prompt unlock code."),
+    payment: ui(`我想購買 ${MONETIZATION.proPrice} Pro Prompt。`, `I would like to buy the ${MONETIZATION.proPrice} Pro Prompt.`),
+    delivery: ui("我已完成付款，但自動解鎖未成功，想用 WhatsApp 作後備支援。", "I have completed payment, but automatic unlock did not work. I would like WhatsApp fallback support."),
     quick: ui("我想預約 HK$188 真人簡批。", "I would like to book the HK$188 human quick reading."),
     deep: ui("我想了解 HK$1680 起找大師父協助的安排。", "I would like to learn about the HK$1680+ senior master consultation arrangement."),
     consult: ui("我想委託真人拆解這支卦。", "I would like a human reading for this hexagram."),
@@ -2167,6 +2216,11 @@ els.resultShareJpgCard?.addEventListener("click", () => {
   void shareJpgCard();
 });
 els.resultDownloadShareCard?.addEventListener("click", downloadShareCard);
+getCheckoutLinks().forEach((link) => {
+  link.addEventListener("click", (event) => {
+    void startStripeCheckout(event);
+  });
+});
 els.startGesture.addEventListener("click", startGestureCamera);
 els.stopGesture.addEventListener("click", stopGestureCamera);
 els.snapSensitivity?.addEventListener("change", () => {

@@ -1,5 +1,6 @@
 window.ICHING_MONETIZATION_CONFIG = {
   checkoutUrl: "https://buy.stripe.com/eVqeVd22R2Hdb0vc8taMU09",
+  checkoutEndpoint: "/api/create-checkout-session",
   whatsappNumber: "85265784837",
   proPrice: "HK$28",
   consultLabel: "六爻解卦委託",

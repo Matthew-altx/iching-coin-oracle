@@ -22,6 +22,14 @@ function getHeader(headers, key) {
   return headers[key.toLowerCase()] || "";
 }
 
+function parseJson(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {};
+  }
+}
+
 function headerIncludes(headers, key, fragments) {
   const value = getHeader(headers, key);
   return fragments.every((fragment) => value.includes(fragment));
@@ -31,10 +39,17 @@ const homepage = await read(`${baseUrl}/`);
 const englishPage = await read(`${baseUrl}/en.html`);
 const config = await read(`${baseUrl}/monetization.config.js`);
 const app = await read(`${baseUrl}/app.js`);
+const successPage = await read(`${baseUrl}/success`);
+const successJs = await read(`${baseUrl}/success.js`);
+const checkoutEndpointGuard = await read(`${baseUrl}/api/create-checkout-session`);
+const verifyEndpointGuard = await read(`${baseUrl}/api/verify-checkout-session`);
+const stripeStatus = await read(`${baseUrl}/api/stripe-status`);
 const hexagram64 = await read(`${baseUrl}/hexagrams/64`);
 const sitemap = await read(`${baseUrl}/sitemap.xml`);
+const stripeStatusJson = parseJson(stripeStatus.text);
 
 const checkoutUrl = extractConfigValue(config.text, "checkoutUrl");
+const checkoutEndpoint = extractConfigValue(config.text, "checkoutEndpoint");
 const whatsappNumber = extractConfigValue(config.text, "whatsappNumber");
 const unlockCodeHash = extractConfigValue(config.text, "unlockCodeHash");
 
@@ -64,6 +79,8 @@ const permissionsRequiredFragments = [
 const checks = {
   homepage200: homepage.ok,
   englishPage200: englishPage.ok,
+  successPage200: successPage.ok,
+  successJs200: successJs.ok,
   config200: config.ok,
   configMustRevalidate: config.headers["cache-control"]?.includes("must-revalidate") || false,
   hasContentSecurityPolicy: headerIncludes(homepage.headers, "content-security-policy", cspRequiredFragments),
@@ -154,12 +171,23 @@ const checks = {
     && homepage.text.includes("resultBarDeliveryWhatsApp")
     && homepage.text.includes("resultBarConsult")
     && englishPage.text.includes("Cast complete")
-    && englishPage.text.includes("WhatsApp for Code"),
+    && englishPage.text.includes("WhatsApp Fallback"),
   hasPromptDeliveryStrip: homepage.text.includes("付款後點拎？")
-    && homepage.text.includes("WhatsApp 發收據")
-    && homepage.text.includes("收解鎖碼")
-    && englishPage.text.includes("Send receipt on WhatsApp")
-    && englishPage.text.includes("Receive unlock code"),
+    && homepage.text.includes("成功頁自動核對")
+    && homepage.text.includes("自動解鎖")
+    && englishPage.text.includes("Success page verifies")
+    && englishPage.text.includes("Auto unlock"),
+  hasAutomaticStripeDelivery: homepage.text.includes("付款後自動解鎖 Pro Prompt")
+    && homepage.text.includes("Stripe 會帶你回到本網站成功頁")
+    && homepage.text.includes("本機解鎖 Pro Prompt")
+    && englishPage.text.includes("Pro Prompt Unlocks Automatically After Payment")
+    && englishPage.text.includes("Stripe returns a session_id to the success page")
+    && successPage.text.includes("success.js")
+    && successJs.text.includes("verify-checkout-session")
+    && successJs.text.includes("localStorage.setItem(PRO_UNLOCK_KEY")
+    && app.text.includes("startStripeCheckout")
+    && app.text.includes("getCheckoutEndpoint")
+    && config.text.includes('checkoutEndpoint: "/api/create-checkout-session"'),
   appRendersConversionLinks: app.ok
     && app.text.includes("resultCopyButton")
     && app.text.includes("resultProCheckout")
@@ -180,9 +208,9 @@ const checks = {
   hasPromptClosingCall: app.ok
     && app.text.includes("卦示機緣，人行方成。多行善事，自得善果。未來所有命運仍掌握在你的手上。")
     && hexagram64.text.includes("卦示機緣，人行方成。多行善事，自得善果。未來所有命運仍掌握在你的手上。"),
-  hasFulfillmentFlow: homepage.text.includes("付款後如何取得 Pro Prompt") && homepage.text.includes("deliveryWhatsApp"),
-  hasPaymentChecklist: homepage.text.includes("付款前後準備好三樣資料")
-    && homepage.text.includes("Stripe 收據截圖或付款 email"),
+  hasFulfillmentFlow: homepage.text.includes("付款後自動解鎖 Pro Prompt") && homepage.text.includes("deliveryWhatsApp"),
+  hasPaymentChecklist: homepage.text.includes("自動交付如何運作")
+    && homepage.text.includes("Stripe 成功頁帶回 session_id"),
   hasProComparison: homepage.text.includes("Free 與 Pro 對照") && homepage.text.includes("顧問式拆局"),
   hasTrustStatement: homepage.text.includes("不替代法律、醫療、投資") && homepage.text.includes("不儲存卡資料"),
   hasResponsibleUse: homepage.text.includes('id="boundaries"')
@@ -204,6 +232,11 @@ const checks = {
   hexagram64Ok: hexagram64.ok && hexagram64.text.includes("第 64 卦《火水未濟》AI Prompt"),
   sitemapOk: sitemap.ok && sitemap.text.includes(`${baseUrl}/en.html`) && sitemap.text.includes(`${baseUrl}/hexagrams/64`),
   checkoutConfigured: checkoutUrl.startsWith("https://"),
+  checkoutEndpointConfigured: checkoutEndpoint === "/api/create-checkout-session",
+  checkoutEndpointGuarded: checkoutEndpointGuard.status === 405 && checkoutEndpointGuard.text.includes("method_not_allowed"),
+  verifyEndpointGuarded: verifyEndpointGuard.status === 400 && verifyEndpointGuard.text.includes("session_id_required"),
+  stripeStatusOk: stripeStatus.ok && stripeStatusJson.ok === true,
+  stripeSecretConfigured: stripeStatusJson.stripeSecretConfigured === true,
   whatsappConfigured: /^\d{8,15}$/.test(whatsappNumber.replace(/\D/g, "")),
   unlockHashConfigured: /^[a-f0-9]{64}$/i.test(unlockCodeHash),
 };
@@ -214,6 +247,7 @@ console.log(JSON.stringify({
   baseUrl,
   readyForPaidLaunch,
   checkoutUrl: checkoutUrl ? "[configured]" : "",
+  checkoutEndpoint: checkoutEndpoint ? "[configured]" : "",
   whatsappNumber: whatsappNumber ? "[configured]" : "",
   checks,
 }, null, 2));

@@ -351,8 +351,8 @@
             <div class="prompt-delivery-strip" aria-label="Pro Prompt delivery flow after payment">
               <strong>After payment</strong>
               <span>Pay with Stripe</span>
-              <span>Send receipt on WhatsApp</span>
-              <span>Receive unlock code</span>
+              <span>Success page verifies</span>
+              <span>Auto unlock</span>
               <span>Copy Pro Prompt</span>
             </div>
             <textarea id="proPromptOutput" readonly hidden></textarea>
@@ -364,7 +364,7 @@
               <a class="primary-link" id="checkoutLink" href="#" target="_blank" rel="noreferrer">Unlock Pro Prompt · HK$28</a>
               <button class="ghost-button" id="copyProButton" type="button" disabled>Copy Pro Prompt</button>
             </div>
-            <small id="checkoutNote">If Stripe Payment Link is not configured, the button falls back to WhatsApp payment handling.</small>
+            <small id="checkoutNote">After payment, Stripe returns here for automatic verification and unlock. WhatsApp remains the fallback if redirect fails.</small>
           </article>
 
           <article class="share-card-panel">
@@ -393,7 +393,7 @@
           </div>
           <div class="result-cta-actions">
             <a class="primary-link" id="resultBarProCheckout" href="#" target="_blank" rel="noreferrer">Unlock Pro</a>
-            <a class="ghost-link" id="resultBarDeliveryWhatsApp" href="#" target="_blank" rel="noreferrer">WhatsApp for Code</a>
+            <a class="ghost-link" id="resultBarDeliveryWhatsApp" href="#" target="_blank" rel="noreferrer">WhatsApp Fallback</a>
             <a class="ghost-link" id="resultBarConsult" href="#" target="_blank" rel="noreferrer">WhatsApp Reading</a>
           </div>
         </div>
@@ -402,31 +402,31 @@
       <section class="history-section" id="fulfillment">
         <div class="section-heading">
           <p class="system-label">After Payment</p>
-          <h2>How to Receive the Pro Prompt After Payment</h2>
+          <h2>Pro Prompt Unlocks Automatically After Payment</h2>
         </div>
         <div class="fulfillment-grid">
           <article>
             <strong>1. Pay with Stripe</strong>
-            <p>Use the HK$28 payment link. Card details are handled by Stripe; this website does not touch or store your card information.</p>
+            <p>Use the HK$28 payment button to open a secure Stripe Checkout page. Card details are handled by Stripe; this website does not touch or store your card information.</p>
           </article>
           <article>
-            <strong>2. Deliver through WhatsApp</strong>
-            <p>After payment, send the receipt screenshot or payment email through WhatsApp. If you have already cast, include your question, primary hexagram and changed hexagram.</p>
+            <strong>2. Success page verifies</strong>
+            <p>After payment, Stripe returns you to this website with a session_id. The success page checks that payment server-side.</p>
           </article>
           <article>
-            <strong>3. Receive the unlock code</strong>
-            <p>After verification, the Pro unlock code will be sent back. Enter it once and this browser can copy the full Pro Prompt.</p>
+            <strong>3. Auto unlock</strong>
+            <p>Once verified, this browser unlocks the Pro Prompt automatically. If redirect fails, WhatsApp remains the fallback support path.</p>
           </article>
         </div>
         <div class="fulfillment-actions">
           <a class="primary-link" id="fulfillmentCheckout" href="#" target="_blank" rel="noreferrer">Pay HK$28 Now</a>
-          <a class="ghost-link" id="deliveryWhatsApp" href="#" target="_blank" rel="noreferrer">WhatsApp after payment</a>
+          <a class="ghost-link" id="deliveryWhatsApp" href="#" target="_blank" rel="noreferrer">WhatsApp Fallback Support</a>
         </div>
         <div class="payment-checklist" aria-label="Payment delivery checklist">
-          <strong>Prepare these three items before or after payment</strong>
-          <span>Stripe receipt screenshot or payment email</span>
+          <strong>How automatic delivery works</strong>
+          <span>Stripe returns a session_id to the success page</span>
           <span>Your question text</span>
-          <span>If already cast, include the primary hexagram, changed hexagram and moving lines</span>
+          <span>After verification, this browser unlocks Pro Prompt</span>
         </div>
       </section>
 
@@ -444,7 +444,7 @@
             <span>Self-serve</span>
             <strong>Pro Prompt</strong>
             <div class="price">HK$28</div>
-            <p>For users who want to analyze the cast with AI themselves: pay, receive an unlock code and copy the full Pro Prompt.</p>
+            <p>For users who want to analyze the cast with AI themselves: pay, auto-unlock and copy the full Pro Prompt.</p>
             <ul>
               <li>Complete six-line data</li>
               <li>Plain next-step list</li>
@@ -527,7 +527,7 @@
         <div class="method-list trust-list">
           <span>Local casting</span>
           <span>Stripe payment</span>
-          <span>WhatsApp delivery</span>
+          <span>Success page auto-unlock</span>
           <span>No card data stored</span>
           <span>Does not make final decisions for you</span>
         </div>

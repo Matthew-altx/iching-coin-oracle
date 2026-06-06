@@ -351,8 +351,8 @@
             <div class="prompt-delivery-strip" aria-label="Pro Prompt 付款後交付流程">
               <strong>付款後點拎？</strong>
               <span>Stripe 付款</span>
-              <span>WhatsApp 發收據</span>
-              <span>收解鎖碼</span>
+              <span>成功頁自動核對</span>
+              <span>自動解鎖</span>
               <span>複製 Pro Prompt</span>
             </div>
             <textarea id="proPromptOutput" readonly hidden></textarea>
@@ -364,7 +364,7 @@
               <a class="primary-link" id="checkoutLink" href="#" target="_blank" rel="noreferrer">HK$28 解鎖 Pro Prompt</a>
               <button class="ghost-button" id="copyProButton" type="button" disabled>複製 Pro Prompt</button>
             </div>
-            <small id="checkoutNote">未設定 Stripe Payment Link 時，按鈕會改用 WhatsApp 取得付款連結。</small>
+            <small id="checkoutNote">付款成功後會回到本網站自動核對並解鎖；如未能返回，可用 WhatsApp 作後備支援。</small>
           </article>
 
           <article class="share-card-panel">
@@ -393,7 +393,7 @@
           </div>
           <div class="result-cta-actions">
             <a class="primary-link" id="resultBarProCheckout" href="#" target="_blank" rel="noreferrer">解鎖 Pro</a>
-            <a class="ghost-link" id="resultBarDeliveryWhatsApp" href="#" target="_blank" rel="noreferrer">WhatsApp 領碼</a>
+            <a class="ghost-link" id="resultBarDeliveryWhatsApp" href="#" target="_blank" rel="noreferrer">WhatsApp 後備</a>
             <a class="ghost-link" id="resultBarConsult" href="#" target="_blank" rel="noreferrer">WhatsApp 委託</a>
           </div>
         </div>
@@ -402,31 +402,31 @@
       <section class="history-section" id="fulfillment">
         <div class="section-heading">
           <p class="system-label">After Payment</p>
-          <h2>付款後如何取得 Pro Prompt</h2>
+          <h2>付款後自動解鎖 Pro Prompt</h2>
         </div>
         <div class="fulfillment-grid">
           <article>
             <strong>1. Stripe 付款</strong>
-            <p>按 HK$28 付款連結完成付款。卡資料由 Stripe 處理，網站不會接觸或儲存你的付款資料。</p>
+            <p>按 HK$28 付款按鈕後，網站會建立 Stripe 安全付款頁。卡資料由 Stripe 處理，網站不會接觸或儲存你的付款資料。</p>
           </article>
           <article>
-            <strong>2. WhatsApp 交收</strong>
-            <p>付款後把收據截圖或付款 email 發到 WhatsApp。若已起卦，可以一併附上問題、本卦和變卦。</p>
+            <strong>2. 成功頁核對</strong>
+            <p>付款完成後，Stripe 會帶你回到本網站成功頁。成功頁會用 session_id 向伺服端核對付款狀態。</p>
           </article>
           <article>
-            <strong>3. 收取解鎖碼</strong>
-            <p>核對後會回覆 Pro 解鎖碼。輸入一次後，此瀏覽器即可複製完整 Pro Prompt。</p>
+            <strong>3. 自動解鎖</strong>
+            <p>核對成功後，此瀏覽器會自動解鎖 Pro Prompt。若未能自動返回，可用 WhatsApp 作後備支援。</p>
           </article>
         </div>
         <div class="fulfillment-actions">
           <a class="primary-link" id="fulfillmentCheckout" href="#" target="_blank" rel="noreferrer">立即付款 HK$28</a>
-          <a class="ghost-link" id="deliveryWhatsApp" href="#" target="_blank" rel="noreferrer">付款後 WhatsApp 領取解鎖碼</a>
+          <a class="ghost-link" id="deliveryWhatsApp" href="#" target="_blank" rel="noreferrer">WhatsApp 後備支援</a>
         </div>
         <div class="payment-checklist" aria-label="付款交付清單">
-          <strong>付款前後準備好三樣資料</strong>
-          <span>Stripe 收據截圖或付款 email</span>
+          <strong>自動交付如何運作</strong>
+          <span>Stripe 成功頁帶回 session_id</span>
           <span>你的問題文字</span>
-          <span>如已起卦，附上本卦、變卦與動爻</span>
+          <span>付款核對成功後，本機解鎖 Pro Prompt</span>
         </div>
       </section>
 
@@ -444,7 +444,7 @@
             <span>自助</span>
             <strong>Pro Prompt</strong>
             <div class="price">HK$28</div>
-            <p>適合想自己用 AI 拆卦的人：付款後取得解鎖碼，複製完整 Pro Prompt。</p>
+            <p>適合想自己用 AI 拆卦的人：付款成功後自動解鎖，直接複製完整 Pro Prompt。</p>
             <ul>
               <li>完整六爻資料</li>
               <li>白話下一步清單</li>
@@ -527,7 +527,7 @@
         <div class="method-list trust-list">
           <span>本機起卦</span>
           <span>Stripe 收款</span>
-          <span>WhatsApp 交付</span>
+          <span>成功頁自動解鎖</span>
           <span>不儲存卡資料</span>
           <span>不替你作最終決定</span>
         </div>

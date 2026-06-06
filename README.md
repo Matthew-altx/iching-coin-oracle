@@ -18,16 +18,16 @@ An open-source static website for learning and experimenting with the I Ching si
 - Experimental camera + audio snap detection for ritual-style casting.
 - Local browser history, up to 30 records.
 - Static 64-hexagram library for cultural discovery and SEO.
-- Optional Stripe Payment Link and WhatsApp fulfillment configuration.
+- Optional Stripe Checkout auto-unlock flow, Payment Link fallback and WhatsApp support configuration.
 
 ## Tech Stack
 
 - Static HTML, CSS and vanilla JavaScript.
 - Cloudflare Pages hosting.
 - Browser-only casting logic and localStorage history.
-- No backend database.
+- No backend database. Cloudflare Pages Functions are used only for Stripe Checkout Session creation and payment verification.
 - No built-in AI API call. Users copy the generated prompt into their preferred external AI.
-- Optional monetization values are configured in `monetization.config.js`.
+- Optional public monetization values are configured in `monetization.config.js`; Stripe secrets stay in Cloudflare environment variables.
 
 ## Responsible Use
 
@@ -70,13 +70,14 @@ The deployment is ready for paid launch only when the script returns:
 
 ## Monetization Setup
 
-Edit only `monetization.config.js` for live payment settings:
+Edit `monetization.config.js` for public payment settings:
 
 - `checkoutUrl`: Stripe Payment Link.
+- `checkoutEndpoint`: Cloudflare Pages Function endpoint, normally `/api/create-checkout-session`.
 - `whatsappNumber`: WhatsApp number in international format, for example `85265784837`.
 - `unlockCodeHash`: SHA-256 hash of the Pro unlock code.
 
-Do not put a plaintext unlock code into public files.
+Set `STRIPE_SECRET_KEY` in Cloudflare Pages for automatic Pro Prompt delivery. Do not put a plaintext unlock code or Stripe secret key into public files.
 
 ## Project Files
 
@@ -85,6 +86,9 @@ Do not put a plaintext unlock code into public files.
 - `styles.css`: Shared design system and responsive layout.
 - `app.js`: Casting logic, prompt generation, gesture/audio mode and local history.
 - `monetization.config.js`: Public monetization configuration.
+- `functions/api/create-checkout-session.js`: Server-side Stripe Checkout Session creation.
+- `functions/api/verify-checkout-session.js`: Server-side Checkout Session verification for automatic unlock.
+- `success.html` / `success.js`: Stripe success page that unlocks Pro Prompt after verification.
 - `hexagrams/`: Static 64-hexagram library.
 - `scripts/verify-production.mjs`: Production readiness checks.
 

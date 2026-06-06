@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Pro Prompt 付款核對 · 六爻銅錢占筮</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Serif+TC:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="cosmos" aria-hidden="true"></div>
+    <main class="success-main">
+      <section class="success-shell" aria-live="polite">
+        <div class="success-mark" id="successMark" aria-hidden="true">易</div>
+        <p class="system-label" id="successKicker">Stripe Verification</p>
+        <h1 id="successTitle">正在核對付款</h1>
+        <p class="lead" id="successCopy">
+          正在向 Stripe 確認付款狀態。成功後，此瀏覽器會自動解鎖 Pro Prompt。
+        </p>
+        <div class="success-status" id="successStatus">核對中...</div>
+        <div class="success-actions">
+          <a class="primary-link" id="returnLink" href="./#pro">回到起卦頁複製 Pro Prompt</a>
+          <a class="ghost-link" id="supportLink" href="https://wa.me/85265784837" target="_blank" rel="noreferrer">WhatsApp 後備支援</a>
+        </div>
+        <small class="success-note" id="successNote">
+          此頁只會向 Stripe 查詢付款狀態，不會接觸或儲存你的卡資料。
+        </small>
+      </section>
+    </main>
+    <script src="./monetization.config.js?v=20260606-auto-checkout" defer></script>
+    <script src="./success.js?v=20260606-auto-checkout" defer></script>
+  </body>
+</html>

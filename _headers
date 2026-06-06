@@ -18,3 +18,12 @@
 
 /index.html
   Cache-Control: public, max-age=0, must-revalidate
+
+/success.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/success
+  Cache-Control: public, max-age=0, must-revalidate
+
+/success.js
+  Cache-Control: public, max-age=0, must-revalidate
